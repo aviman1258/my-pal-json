@@ -1,31 +1,51 @@
 import json
+import sys
 from anytree import Node, RenderTree
 
 # Function to build the tree from the JSON
 def build_tree(data, parent=None):
     if isinstance(data, dict):  # If it's a dictionary, process keys as nodes
         for key, value in data.items():
-            node = Node(key, parent=parent)
-            build_tree(value, node)  # Recursive call to process the value
-    elif isinstance(data, list):  # If it's a list, process each item
-        for i, item in enumerate(data):
-            node = Node(f'Item {i}', parent=parent)
-            build_tree(item, node)  # Recursive call to process each item
-    else:
-        # If it's a primitive value (string, int, etc.), create a node with the value
-        Node(f'{data}', parent=parent)
+            if isinstance(value, list):  # If it's a list, handle it specially
+                node = Node(f'{key} [ ]', parent=parent)  # Append '[ ]' to the key name
+                if value:  # Process only the first element if the list is not empty
+                    build_tree(value[0], node)
+            else:
+                node = Node(key, parent=parent)  # Create a node for each key
+                build_tree(value, node)  # Recursive call to process the value
+    elif isinstance(data, list):  # If it's a list, this block will not be reached for the first element
+        pass  # We handle lists inside the dict block, so no need to process them again here
 
-# Load JSON data from a file
-json_file = 'user.json'
+# Main function to handle the command-line argument
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python script.py <json_file>")
+        sys.exit(1)
 
-with open(json_file, 'r') as file:
-    json_data = json.load(file)
+    json_file = sys.argv[1]
 
-# Create the root node based on the root element of the JSON
-root_name = list(json_data.keys())[0] if isinstance(json_data, dict) else "Root"
-root = Node(root_name)
-build_tree(json_data[root_name] if isinstance(json_data, dict) else json_data, root)
+    # Load JSON data from the provided file
+    try:
+        with open(json_file, 'r') as file:
+            json_data = json.load(file)
+    except FileNotFoundError:
+        print(f"Error: The file '{json_file}' was not found.")
+        sys.exit(1)
+    except json.JSONDecodeError:
+        print(f"Error: The file '{json_file}' is not a valid JSON file.")
+        sys.exit(1)
 
-# Render the tree in a readable format
-for pre, fill, node in RenderTree(root):
-    print(f"{pre}{node.name}")
+    # Create the root node based on the entire JSON structure
+    root = Node("root")
+    build_tree(json_data, root)
+
+    # Write the tree (keys only) to a file
+    output_file = 'tree_output_keys_only.txt'
+    with open(output_file, 'w', encoding='utf-8') as f:
+        for pre, fill, node in RenderTree(root):
+            f.write(f"{pre}{node.name}\n")
+
+    print(f"Tree structure (keys only, handling arrays) has been written to {output_file}")
+
+if __name__ == "__main__":
+    main()
