@@ -9,25 +9,25 @@ if "%jsonFile%"=="" (
     exit /b
 )
 
-:: Run json-2-tree.py to generate tree_output_keys_only.txt
-python json-2-tree.py "%jsonFile%"
-
 :: Run json-2-csharp-model.py to generate C# files
 python json-2-csharp-model.py "%jsonFile%"
 
-set outputFolder = %~n1jsonFile%
 
-echo %outputFolder%
+:: Run json-2-tree.py to generate tree_output_keys_only.txt
+python json-2-tree.py "%jsonFile%"
 
-pause
+
+rem Extract the filename without the extension from the full path
+for %%F in (%jsonFile%) do set outputFolder=%%~nF
 
 :: Capture the output directory from the json-2-csharp-model.py script
-set outputDir=csharp-model\outputFolder
+set outputDir=csharp-model\%outputFolder%
+
+:: Create the 'tree' folder in the output directory if it doesn't exist
+mkdir "%outputDir%\tree"
  
-:: Move the tree_output_keys_only.txt to the C# output directory
-move "tree_output_keys_only.txt" "%outputDir%"
+:: Move the tree_output_keys_only.txt to the 'tree' folder inside the C# output directory
+move "schema-tree.txt" "%outputDir%\tree"
 
 :: Open the folder where the .cs files and tree output are saved
 start "" "%outputDir%"
-
-pause

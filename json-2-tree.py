@@ -40,7 +40,7 @@ def main():
     build_tree(json_data, root)
 
     # Write the tree (keys only) to a file
-    output_file = 'tree_output_keys_only.txt'
+    output_file = 'schema-tree.txt'
     with open(output_file, 'w', encoding='utf-8') as f:
         for pre, fill, node in RenderTree(root):
             f.write(f"{pre}{node.name}\n")

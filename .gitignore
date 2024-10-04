@@ -26,7 +26,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 *.cs
-tree_output_keys_only.txt
+schema-tree.txt
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
