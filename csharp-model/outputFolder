@@ -1,0 +1,42 @@
+root
+└── company
+    ├── name
+    ├── founded
+    ├── location
+    │   ├── address
+    │   │   ├── street
+    │   │   ├── city
+    │   │   ├── state
+    │   │   └── zipCode
+    │   └── coordinates
+    │       ├── latitude
+    │       └── longitude
+    ├── employees [ ]
+    │   ├── firstName
+    │   ├── lastName
+    │   ├── role
+    │   ├── salary
+    │   ├── contactInfo
+    │   │   ├── email
+    │   │   └── phone
+    │   │       ├── work
+    │   │       └── mobile
+    │   └── projects [ ]
+    │       ├── name
+    │       ├── status
+    │       ├── budget
+    │       ├── startDate
+    │       └── endDate
+    └── products [ ]
+        ├── productName
+        ├── category
+        ├── price
+        ├── available
+        └── specifications
+            ├── dimensions
+            │   ├── width
+            │   ├── height
+            │   └── depth
+            ├── weight
+            ├── batteryLife
+            └── warranty

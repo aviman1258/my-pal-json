@@ -1,0 +1,68 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #333; /* Dark gray background for the page */
+    color: white; /* Ensures text is readable on dark background */
+}
+
+header {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    background-color: #444; /* Slightly lighter gray for the header */
+}
+
+h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-family: Arial, sans-serif;
+    color: white; /* White text for the header */
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    flex-grow: 1;
+    height: 100%;
+    width: 100%;
+}
+
+.left, .right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.left textarea, .right textarea {
+    width: 90%;
+    height: 90%;
+    resize: none;
+    font-size: 1rem;
+    background-color: #ccc; /* Light gray background for textboxes */
+    color: #333; /* Darker text for readability */
+    border: none;
+    padding: 10px;
+}
+
+.middle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.middle button {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    background-color: #555; /* Medium gray button */
+    color: white; /* White text on button */
+    border: none;
+    cursor: pointer;
+}
+
+.middle button:hover {
+    background-color: #777; /* Lighter gray on hover */
+}
