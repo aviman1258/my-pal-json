@@ -50,6 +50,7 @@ h1 {
 
 .middle {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -57,12 +58,17 @@ h1 {
 .middle button {
     font-size: 1.2rem;
     padding: 10px 20px;
-    background-color: #555; /* Medium gray button */
+    margin: 10px 0; /* Space between the buttons */
+    width: 150px;  /* Fixed width for both buttons */
+    height: 50px;  /* Fixed height for both buttons */
+    background-color: #28a745;  /* Green background color */
     color: white; /* White text on button */
     border: none;
     cursor: pointer;
+    text-align: center;
+    border-radius: 5px; /* Slightly rounded corners */
 }
 
 .middle button:hover {
-    background-color: #777; /* Lighter gray on hover */
+    background-color: #218838;  /* Darker green on hover */
 }

@@ -27,6 +27,8 @@ share/python-wheels/
 MANIFEST
 *.cs
 schema-tree.txt
+json/
+csharp-model/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

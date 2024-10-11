@@ -1,9 +1,7 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import Blueprint, request, jsonify
 from anytree import Node, RenderTree
 
-app = Flask(__name__)
-CORS(app)  # This will enable CORS for all routes
+analyze_bp = Blueprint('analyze_bp', __name__)
 
 # Function to build the tree from the JSON
 def build_tree(data, parent=None):
@@ -19,34 +17,29 @@ def build_tree(data, parent=None):
     elif isinstance(data, list):  # If it's a list, this block will not be reached for the first element
         pass  # We handle lists inside the dict block, so no need to process them again here
 
-# Root route to check server status
-@app.route('/')
-def index():
-    return "Flask server is running. Use the /process-json endpoint to send JSON."
 
-@app.route('/process-json', methods=['POST'])
+@analyze_bp.route('/analyze', methods=['POST'])
+
 def process_json():
-    print("hello")
     json_data = request.get_json()  # Get JSON from the request
-    print(f"Received JSON: {json_data}")  # Debugging line
 
     # Create the root node based on the entire JSON structure
     root = Node("root")
     
     try:
+        if not json_data:
+            return jsonify({"error":"No JSON data received"}), 400
         build_tree(json_data, root)
-        print("Tree building successful")  # Debugging line
     except Exception as e:
-        print(f"Error while building tree: {e}")  # Print error details
+        return jsonify({"error": str(e)}), 500  # return error details
 
     # Create the tree as a string
     tree_output = ""
     for pre, fill, node in RenderTree(root):
         tree_output += f"{pre}{node.name}\n"
-        print(f"Tree Node: {pre}{node.name}")  # Debugging line
 
     # Return the tree structure as a response
-    return jsonify({"tree": tree_output})
+    return jsonify({"tree": tree_output}), 200
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    analyze_bp.run(debug=True)

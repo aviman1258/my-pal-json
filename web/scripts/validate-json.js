@@ -3,12 +3,13 @@ document.getElementById('analyzeBtn').addEventListener('click', function() {
     const outputJson = document.getElementById('outputJson');
 
     try {
+        outputJson.style.color = "black";
         // Try to parse the input as JSON
         const parsedJson = JSON.parse(inputJson);
 
         // Send JSON to the Python server to process and get the tree structure
 
-        fetch('http://127.0.0.1:5000/process-json', {
+        fetch('http://127.0.0.1:5000/analyze', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
