@@ -1,4 +1,4 @@
-document.getElementById('analyzeBtn').addEventListener('click', function() {
+document.getElementById('modelBtn').addEventListener('click', function() {
     const inputJson = document.getElementById('inputJson').value;
     const outputJson = document.getElementById('outputJson');
 
@@ -9,7 +9,7 @@ document.getElementById('analyzeBtn').addEventListener('click', function() {
 
         // Send JSON to the Python server to process and get the tree structure
 
-        fetch('http://127.0.0.1:5000/analyze', {
+        fetch('http://127.0.0.1:5000/model', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ document.getElementById('analyzeBtn').addEventListener('click', function() {
         .catch(error => {
             console.error('Error:', error);
             outputJson.style.color = "red";
-            outputJson.value = 'An error occurred while processing the JSON.';
+            outputJson.value = 'An error occurred while modeling the JSON.';
         });
 
     } catch (error) {
