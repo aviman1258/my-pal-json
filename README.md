@@ -20,6 +20,7 @@ This project provides tools to generate both C# class files and a tree structure
   - Provides a user interface for analyzing JSON files.
   - Displays the JSON tree structure in the browser.
   - Uses Flask as the backend to process and render the JSON tree structure.
+  - Creates C# classes that model the JSON schema.
   - Supports Cross-Origin Resource Sharing (CORS) for easy communication between frontend and backend.
 
 ## Batch File Usage
