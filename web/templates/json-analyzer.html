@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>JSON Analyzer</h1>
+    </header>
+    <div class="container">
+        <div class="left">
+            <textarea id="inputJson" placeholder="Input JSON here"></textarea>
+        </div>
+        <div class="middle">
+            <button id="analyzeBtn">Analyze</button>
+            <button id="modelBtn">Model</button>
+        </div>
+        <div class="right">
+            <!-- Output textbox where both analyze and model results will be displayed -->
+            <textarea id="outputBox" placeholder="Output will be displayed here" readonly></textarea>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts/validate-json.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/model-json.js') }}"></script>
+</body>
+</html>
