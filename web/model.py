@@ -1,9 +1,10 @@
-import json
 import io
-import zipfile
 from flask import Blueprint, request, jsonify, send_file
 
 model_bp = Blueprint('model_bp', __name__)
+
+# Global dictionary to store the generated class files
+class_files = {}
 
 # Function to generate C# class structure from a dictionary or a primitive type
 def generate_csharp_class(class_name, data, class_files):
@@ -76,50 +77,28 @@ def generate_classes():
 
     # Send the list of class file names as links
     file_links = [{"name": f"{file_name}"} for file_name in class_files.keys()]
+
+    print(class_files)
     
     return jsonify({"files": file_links})
 
 # Route to download individual class file
 @model_bp.route('/download/<filename>', methods=['GET'])
-def download_class(filename):
-    json_data = request.args.get('json')  # This can be replaced with the actual JSON processing logic if needed
-    class_name = filename.split('.')[0]
-    class_content = generate_csharp_class(class_name, json.loads(json_data))
+def download_class_file(filename):
+    global class_files
+    # Retrieve the C# class content dynamically from the generated class_files dictionary
+    class_content = class_files.get(filename)  # Assume class_files is globally accessible or stored
 
-    # Return the C# class file as a downloadable file
-    return send_file(io.BytesIO(class_content.encode()), download_name=filename, as_attachment=True)
+    if not class_content:
+        return jsonify({"error": f"File {filename} not found"}), 404
 
-# Route to download all files in a zip
-@model_bp.route('/download-all', methods=['POST'])
-def download_all():
-    json_data = request.get_json()
-    
-    if not json_data:
-        return jsonify({"error": "Invalid or no JSON data received"}), 400
-
-    class_files = {}
-
-    # Determine the root element
-    if isinstance(json_data, dict) and len(json_data) == 1:
-        root_key = list(json_data.keys())[0]
-        root_data = json_data[root_key]
-        base_class_name = root_key.capitalize()
-    else:
-        base_class_name = 'Root'
-        root_data = json_data
-
-    # Generate the base class and nested classes
-    class_files[f"{base_class_name}.cs"] = generate_csharp_class(base_class_name, root_data)
-
-    # Create a zip archive in memory
-    memory_file = io.BytesIO()
-    with zipfile.ZipFile(memory_file, 'w') as zf:
-        for filename, content in class_files.items():
-            zf.writestr(filename, content)
-    memory_file.seek(0)
-
-    # Return the zip file as a downloadable file
-    return send_file(memory_file, download_name="csharp_classes.zip", as_attachment=True)
+    # Use Flask's send_file function to serve the content as a downloadable file
+    return send_file(
+        io.BytesIO(class_content.encode()),  # Serve content from memory
+        download_name=filename,
+        as_attachment=True,
+        mimetype='text/plain'
+    )
 
 if __name__ == "__main__":
     model_bp.run(debug=True)

@@ -1,13 +1,14 @@
 document.getElementById('modelBtn').addEventListener('click', function() {
     const inputJson = document.getElementById('inputJson').value;
-    const outputJson = document.getElementById('outputJson');
+    const analyzeOutput = document.getElementById('analyzeOutput');
+    const modelOutput = document.getElementById('modelOutput');
+
+    // Hide the analyzeOutput and show the modelOutput
+    analyzeOutput.classList.remove('active');
+    modelOutput.classList.add('active');
 
     try {
-        outputJson.style.color = "black";
-        // Try to parse the input as JSON
         const parsedJson = JSON.parse(inputJson);
-
-        // Send JSON to the Python server to process and get the tree structure
 
         fetch('http://127.0.0.1:5000/model', {
             method: 'POST',
@@ -19,24 +20,40 @@ document.getElementById('modelBtn').addEventListener('click', function() {
         .then(response => response.json())
         .then(data => {
             if (data.files) {
-                // Display the file names in the output box
-                outputJson.value = data.files.map(file => file.name).join('\n');
+                // Clear the model output container and insert download links
+                modelOutput.innerHTML = ''; // Clear previous content
+                // Store the files in localStorage and create download links
+                data.files.forEach(file => {
+                    // Assuming server response has file content as well, save content to localStorage
+                    fetch(`http://127.0.0.1:5000/download/${file.name}`)
+                    .then(fileResponse => fileResponse.text())
+                    .then(fileContent => {
+                        // Store file content in localStorage
+                        localStorage.setItem(file.name, fileContent);
+
+                        // Create a download link
+                        const link = document.createElement('a');
+                        link.href = `data:text/plain;charset=utf-8,${encodeURIComponent(fileContent)}`;
+                        link.download = file.name;  // Set file name for download
+                        link.textContent = file.name;
+                        link.style.display = 'block';  // Display links on separate lines
+                        modelOutput.appendChild(link);  // Append the link to the container
+                    });
+                });
             } else if (data.error) {
-                // Display error message if there's an error in the response
-                outputJson.value = `Error: ${data.error}`;
+                modelOutput.textContent = `Error: ${data.error}`;
             } else {
-                outputJson.value = 'Unexpected response format';
+                modelOutput.textContent = 'Unexpected response format';
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            outputJson.style.color = "red";
-            outputJson.value = 'An error occurred while modeling the JSON.';
+            modelOutput.style.color = "red";
+            modelOutput.textContent = 'An error occurred while generating the model.';
         });
 
     } catch (error) {
-        // Display error if JSON is invalid
-        outputJson.value = "Invalid JSON: " + error.message;
-        outputJson.style.color = "red";
+        modelOutput.textContent = "Invalid JSON: " + error.message;
+        modelOutput.style.color = "red";
     }
 });

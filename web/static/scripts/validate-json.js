@@ -1,13 +1,15 @@
 document.getElementById('analyzeBtn').addEventListener('click', function() {
     const inputJson = document.getElementById('inputJson').value;
-    const outputJson = document.getElementById('outputJson');
+    const analyzeOutput = document.getElementById('analyzeOutput');
+    const modelOutput = document.getElementById('modelOutput');
+
+    // Hide the modelOutput and show the analyzeOutput
+    modelOutput.classList.remove('active');
+    analyzeOutput.classList.add('active');
 
     try {
-        outputJson.style.color = "black";
-        // Try to parse the input as JSON
+        analyzeOutput.style.color = "black";
         const parsedJson = JSON.parse(inputJson);
-
-        // Send JSON to the Python server to process and get the tree structure
 
         fetch('http://127.0.0.1:5000/analyze', {
             method: 'POST',
@@ -18,18 +20,23 @@ document.getElementById('analyzeBtn').addEventListener('click', function() {
         })
         .then(response => response.json())
         .then(data => {
-            // Display the tree structure in the output text box
-            outputJson.value = data.tree;
+            if (data.tree) {
+                // Display the tree structure in the textarea
+                analyzeOutput.value = data.tree;
+            } else if (data.error) {
+                analyzeOutput.value = `Error: ${data.error}`;
+            } else {
+                analyzeOutput.value = 'Unexpected response format';
+            }
         })
         .catch(error => {
             console.error('Error:', error);
-            outputJson.style.color = "red";
-            outputJson.value = 'An error occurred while processing the JSON.';
+            analyzeOutput.style.color = "red";
+            analyzeOutput.value = 'An error occurred while processing the JSON.';
         });
 
     } catch (error) {
-        // Display error if JSON is invalid
-        outputJson.value = "Invalid JSON: " + error.message;
-        outputJson.style.color = "red";
+        analyzeOutput.value = "Invalid JSON: " + error.message;
+        analyzeOutput.style.color = "red";
     }
 });

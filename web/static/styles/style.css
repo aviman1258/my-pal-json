@@ -72,3 +72,29 @@ h1 {
 .middle button:hover {
     background-color: #218838;  /* Darker green on hover */
 }
+
+#modelOutput {
+    overflow-y: auto; /* To enable scrolling if needed */
+}
+
+/* Ensure the analyzeOutput and modelOutput have the same dimensions */
+.output {
+    width: 90%;
+    height: 90%;
+    background-color: #ccc;
+    color: #333;
+    border: none;
+    padding: 10px;
+    display: none;  /* Hide by default */
+}
+
+/* Style the textarea separately since it's different from the div */
+#analyzeOutput {
+    resize: none;
+    overflow-y: auto;
+}
+
+/* Initially, the analyzeOutput is shown */
+#analyzeOutput.active, #modelOutput.active {
+    display: block; /* Only the active one is visible */
+}
