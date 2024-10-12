@@ -18,8 +18,15 @@ document.getElementById('modelBtn').addEventListener('click', function() {
         })
         .then(response => response.json())
         .then(data => {
-            // Display the tree structure in the output text box
-            outputJson.value = data.tree;
+            if (data.files) {
+                // Display the file names in the output box
+                outputJson.value = data.files.map(file => file.name).join('\n');
+            } else if (data.error) {
+                // Display error message if there's an error in the response
+                outputJson.value = `Error: ${data.error}`;
+            } else {
+                outputJson.value = 'Unexpected response format';
+            }
         })
         .catch(error => {
             console.error('Error:', error);

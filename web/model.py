@@ -6,7 +6,7 @@ from flask import Blueprint, request, jsonify, send_file
 model_bp = Blueprint('model_bp', __name__)
 
 # Function to generate C# class structure from a dictionary or a primitive type
-def generate_csharp_class(class_name, data):
+def generate_csharp_class(class_name, data, class_files):
     csharp_code = f'public class {class_name}\n{{\n'
 
     if isinstance(data, dict):
@@ -14,10 +14,14 @@ def generate_csharp_class(class_name, data):
             property_type = get_csharp_type(value)
             if isinstance(value, dict):
                 nested_class_name = key.capitalize()
+                # Recursively generate nested class for this dictionary
+                class_files[f"{nested_class_name}.cs"] = generate_csharp_class(nested_class_name, value, class_files)
                 csharp_code += f'    public {nested_class_name} {key.capitalize()} {{ get; set; }}\n'
             elif isinstance(value, list):
                 if value and isinstance(value[0], dict):  # List of objects
                     nested_class_name = key.capitalize()[:-1]
+                    # Recursively generate nested class for the first element in the list
+                    class_files[f"{nested_class_name}.cs"] = generate_csharp_class(nested_class_name, value[0], class_files)
                     csharp_code += f'    public List<{nested_class_name}> {key.capitalize()} {{ get; set; }}\n'
                 else:
                     list_type = get_csharp_type(value[0]) if value else 'object'
@@ -67,11 +71,12 @@ def generate_classes():
         base_class_name = 'Root'
         root_data = json_data
 
-    # Generate the base class and nested classes
-    class_files[f"{base_class_name}.cs"] = generate_csharp_class(base_class_name, root_data)
+    # Generate the base class and any nested classes
+    class_files[f"{base_class_name}.cs"] = generate_csharp_class(base_class_name, root_data, class_files)
 
     # Send the list of class file names as links
     file_links = [{"name": f"{file_name}"} for file_name in class_files.keys()]
+    
     return jsonify({"files": file_links})
 
 # Route to download individual class file
