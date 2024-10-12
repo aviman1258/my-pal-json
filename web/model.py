@@ -3,9 +3,6 @@ from flask import Blueprint, request, jsonify, send_file
 
 model_bp = Blueprint('model_bp', __name__)
 
-# Global dictionary to store the generated class files
-class_files = {}
-
 # Function to generate C# class structure from a dictionary or a primitive type
 def generate_csharp_class(class_name, data, class_files):
     csharp_code = f'public class {class_name}\n{{\n'
@@ -53,10 +50,9 @@ def get_csharp_type(value):
     else:
         return 'object'
 
-# Route to handle JSON input and generate C# classes
 @model_bp.route('/model', methods=['POST'])
 def generate_classes():
-    json_data = request.get_json()  # Get JSON from request
+    json_data = request.get_json()
 
     if not json_data:
         return jsonify({"error": "Invalid or no JSON data received"}), 400
@@ -72,33 +68,15 @@ def generate_classes():
         base_class_name = 'Root'
         root_data = json_data
 
-    # Generate the base class and any nested classes
+    # Generate the base class and nested classes
     class_files[f"{base_class_name}.cs"] = generate_csharp_class(base_class_name, root_data, class_files)
 
-    # Send the list of class file names as links
-    file_links = [{"name": f"{file_name}"} for file_name in class_files.keys()]
+    # Concatenate all class files into a single text block
+    all_classes_text = "\n\n".join(class_files.values())
 
-    print(class_files)
-    
-    return jsonify({"files": file_links})
+    # Return the concatenated class content as plain text
 
-# Route to download individual class file
-@model_bp.route('/download/<filename>', methods=['GET'])
-def download_class_file(filename):
-    global class_files
-    # Retrieve the C# class content dynamically from the generated class_files dictionary
-    class_content = class_files.get(filename)  # Assume class_files is globally accessible or stored
-
-    if not class_content:
-        return jsonify({"error": f"File {filename} not found"}), 404
-
-    # Use Flask's send_file function to serve the content as a downloadable file
-    return send_file(
-        io.BytesIO(class_content.encode()),  # Serve content from memory
-        download_name=filename,
-        as_attachment=True,
-        mimetype='text/plain'
-    )
+    return jsonify({"class_content": all_classes_text}), 200
 
 if __name__ == "__main__":
     model_bp.run(debug=True)

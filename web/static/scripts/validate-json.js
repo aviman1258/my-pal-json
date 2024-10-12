@@ -1,14 +1,9 @@
 document.getElementById('analyzeBtn').addEventListener('click', function() {
     const inputJson = document.getElementById('inputJson').value;
-    const analyzeOutput = document.getElementById('analyzeOutput');
-    const modelOutput = document.getElementById('modelOutput');
-
-    // Hide the modelOutput and show the analyzeOutput
-    modelOutput.classList.remove('active');
-    analyzeOutput.classList.add('active');
+    const outputBox = document.getElementById('outputBox');
 
     try {
-        analyzeOutput.style.color = "black";
+        outputBox.style.color = "black";
         const parsedJson = JSON.parse(inputJson);
 
         fetch('http://127.0.0.1:5000/analyze', {
@@ -22,21 +17,21 @@ document.getElementById('analyzeBtn').addEventListener('click', function() {
         .then(data => {
             if (data.tree) {
                 // Display the tree structure in the textarea
-                analyzeOutput.value = data.tree;
+                outputBox.value = data.tree;
             } else if (data.error) {
-                analyzeOutput.value = `Error: ${data.error}`;
+                outputBox.value = `Error: ${data.error}`;
             } else {
-                analyzeOutput.value = 'Unexpected response format';
+                outputBox.value = 'Unexpected response format';
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            analyzeOutput.style.color = "red";
-            analyzeOutput.value = 'An error occurred while processing the JSON.';
+            outputBox.style.color = "red";
+            outputBox.value = 'An error occurred while processing the JSON.';
         });
 
     } catch (error) {
-        analyzeOutput.value = "Invalid JSON: " + error.message;
-        analyzeOutput.style.color = "red";
+        outputBox.value = "Invalid JSON: " + error.message;
+        outputBox.style.color = "red";
     }
 });
