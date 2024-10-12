@@ -124,12 +124,102 @@ python json-2-tree-direct.py
 
 The Flask server should now be running on http://127.0.0.1:5000.
 
-### Opening the Frontend
+### Using the Web Interface
 
-1. Open the `json-analyzer.html` file in a browser.
-2. Paste a valid JSON object into the Input JSON text box.
-3. Click the Analyze button to submit the JSON.
-4. The hierarchical structure (tree) of the JSON will appear in the `Output JSON` text box.
+1. The web interface will load automatically once the Flask server starts.
+2. Paste a valid JSON object into the `Input JSON` text box.
+3. Use the following buttons to perform operations:
+
+- _Analyze_: Analyzes the JSON and displays its hierarchical tree structure in the `Output` text box.
+- _Model_: Generates C# classes based on the JSON schema and displays the full class definitions as plain text in the `Output` text box
+
+### Example Worflow
+
+1. Paste the following JSON into the `Input JSON` textbox
+
+```json
+{
+  "user": {
+    "name": "John Doe",
+    "age": 30,
+    "email": "johndoe@example.com",
+    "address": {
+      "street": "123 Main St",
+      "city": "New York",
+      "state": "NY",
+      "zip": "10001"
+    },
+    "phoneNumbers": [
+      {
+        "type": "home",
+        "number": "212-555-1234"
+      },
+      {
+        "type": "work",
+        "number": "646-555-5678"
+      }
+    ],
+    "isActive": true,
+    "roles": ["admin", "editor", "user"]
+  }
+}
+```
+
+2. Click the _Analyze_ button. The hierarchical tree structure of the JSON will be displayed in the Output text box.
+
+3. Click the _Model_ button. The generated C# class definitions will be displayed in the Output text box, similar to the following:
+
+### Example Output
+
+```css
+root
+└── user
+    ├── name
+    ├── age
+    ├── email
+    ├── address
+    │   ├── street
+    │   ├── city
+    │   ├── state
+    │   └── zip
+    ├── phoneNumbers [ ]
+    │   ├── type
+    │   └── number
+    ├── isActive
+    └── roles [ ]
+```
+
+```csharp
+public class User
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string Email { get; set; }
+    public Address Address { get; set; }
+    public List<Phonenumber> Phonenumbers { get; set; }
+    public bool Isactive { get; set; }
+    public List<string> Roles { get; set; }
+}
+
+public class Address
+{
+    public string Street { get; set; }
+    public string City { get; set; }
+    public string State { get; set; }
+    public string Zip { get; set; }
+}
+
+public class Phonenumber
+{
+    public string Type { get; set; }
+    public string Number { get; set; }
+}
+```
+
+### Notes
+
+- The _Output_ text box displays both the analyzed JSON tree structure and the generated C# class files depending on which button is pressed.
+- The _Model_ button will generate C# class definitions directly in the output without requiring the user to download any files.
 
 ## License
 
