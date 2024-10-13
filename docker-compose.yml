@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  flask-app:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Make sure this matches the Dockerfile name
+    ports:
+      - "5000:5000"           # Map container port 5000 to host port 5000
+    environment:
+      - FLASK_DEBUG=production # Set environment variable to production mode
+    volumes:
+      - .:/app                # Mount the current directory to the container's /app directory
+    restart: unless-stopped    # Automatically restart the container if it stops
