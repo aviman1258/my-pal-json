@@ -23,6 +23,23 @@ This project provides tools to generate both C# class files and a tree structure
   - Creates C# classes that model the JSON schema.
   - Supports Cross-Origin Resource Sharing (CORS) for easy communication between frontend and backend.
 
+**Docker Container Enables**:
+
+- Allows the user tp run a docker container that will give the user access to all capabilities
+
+## Docker
+
+### Steps
+
+- Go to root folder in terminal.
+- Spin up contaier:
+
+```bash
+docker-compose up -d
+```
+
+- Once the container is up and running, go to `localhost:5000`.
+
 ## Batch File Usage
 
 ### Prerequisites
