@@ -12,3 +12,4 @@ services:
     volumes:
       - .:/app                # Mount the current directory to the container's /app directory
     restart: unless-stopped    # Automatically restart the container if it stops
+    container_name: json-analyzer-server
