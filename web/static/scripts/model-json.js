@@ -31,12 +31,10 @@ document.getElementById('modelBtn').addEventListener('click', function() {
         })
         .catch(error => {
             console.error('Error:', error);
-            outputBox.style.color = "red";
             outputBox.value = 'An error occurred while generating the model.';
         });
 
     } catch (error) {
         outputBox.value = "Invalid JSON: " + error.message;
-        outputBox.style.color = "red";
     }
 });
