@@ -25,12 +25,10 @@ document.getElementById('analyzeBtn').addEventListener('click', function() {
         })
         .catch(error => {
             console.error('Error:', error);
-            outputBox.style.color = "red";
             outputBox.value = 'An error occurred while processing the JSON.';
         });
 
     } catch (error) {
         outputBox.value = "Invalid JSON: " + error.message;
-        outputBox.style.color = "red";
     }
 });
