@@ -5,9 +5,9 @@
             "name": "Flask Debug",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/web/app.py",  // Updated to point to the web folder
+            "program": "${workspaceFolder}/web/app.py",
             "env": {
-                "FLASK_APP": "web/app.py",  // Updated to point to the web folder
+                "FLASK_APP": "web/app.py",
                 "FLASK_ENV": "development"
             },
             "args": [

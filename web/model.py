@@ -1,4 +1,4 @@
-from generators.csharp import generate_csharp_class
+from .generators.csharp import generate_csharp_class
 from flask import Blueprint, request, jsonify
 
 model_bp = Blueprint('model_bp', __name__)
