@@ -27,10 +27,7 @@ def open_browser():
     webbrowser.open_new("http://127.0.0.1:5000")
 
 if __name__ == "__main__":
-    if os.environ.get('FLASK_DEBUG') == 'production':
+    if not os.environ.get('FLASK_DEBUG') == 'production':
         Timer(1, open_browser).start()  # Open the browser after a 1-second delay
-        debugval = False
-    else:
-        debugval = True
     
-    app.run(debug=debugval)
+    app.run(debug=False)
