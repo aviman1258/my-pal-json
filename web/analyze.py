@@ -5,17 +5,17 @@ analyze_bp = Blueprint('analyze_bp', __name__)
 
 # Function to build the tree from the JSON
 def build_tree(data, parent=None):
-    if isinstance(data, dict):  # If it's a dictionary, process keys as nodes
+    if isinstance(data, dict):  
         for key, value in data.items():
-            if isinstance(value, list):  # If it's a list, handle it specially
-                node = Node(f'{key} [ ]', parent=parent)  # Append '[ ]' to the key name
-                if value:  # Process only the first element if the list is not empty
+            if isinstance(value, list):  
+                node = Node(f'{key} [ ]', parent=parent) 
+                if value:  
                     build_tree(value[0], node)
             else:
-                node = Node(key, parent=parent)  # Create a node for each key
-                build_tree(value, node)  # Recursive call to process the value
-    elif isinstance(data, list):  # If it's a list, this block will not be reached for the first element
-        pass  # We handle lists inside the dict block, so no need to process them again here
+                node = Node(key, parent=parent)  #
+                build_tree(value, node)  
+    elif isinstance(data, list):  
+        pass  
 
 
 @analyze_bp.route('/analyze', methods=['POST'])
@@ -23,7 +23,6 @@ def build_tree(data, parent=None):
 def process_json():
     json_data = request.get_json()  # Get JSON from the request
 
-    # Create the root node based on the entire JSON structure
     root = Node("root")
     
     try:

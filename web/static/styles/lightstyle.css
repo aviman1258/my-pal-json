@@ -35,12 +35,17 @@ h1 {
     flex-grow: 1;
     height: 100%;
     width: 100%;
+    padding: 20px; /* Add padding around the entire container */
+    box-sizing: border-box; /* Ensures padding is inside the total width/height */
 }
 
 .left{
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+    padding: 20px; /* Add padding to the right section */
+    box-sizing: border-box; /* Ensures the padding is included inside the width */
 }
 
 .right{
@@ -49,6 +54,8 @@ h1 {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    padding: 20px; /* Add padding to the right section */
+    box-sizing: border-box; /* Ensures the padding is included inside the width */
 }
 
 .left textarea, .right textarea {
@@ -63,6 +70,7 @@ h1 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
     padding: 20px;
     transition: all 0.3s ease;
+    margin: 10px;
 }
 
 .left textarea:hover, .right textarea:hover {
@@ -102,21 +110,47 @@ h1 {
 
 #themeToggleBtn {
     position: absolute;
-    top: -40px; /* Adjust as necessary */
-    right: 0;
+    top: 20px; /* Adjust to a reasonable position inside the header */
+    right: 20px; /* Space it away from the edge of the page */
     background: none;
     border: none;
     cursor: pointer;
+    transition: box-shadow 0.3s ease;
+    width: 50px;  /* Set width for round shape */
+    height: 50px; /* Set height for round shape */
+    border-radius: 50%; /* This makes the button round */
+    padding: 5px; /* Add padding for a nicer look */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Optional shadow for depth */
 }
 
 #themeToggleBtn img {
-    width: 30px;
-    height: 30px;
-    filter: invert(0%); /* Ensures the sun/moon icon is colored correctly in light theme */
+    width: 100%;  /* Make the image fill the button */
+    height: 100%;
+    border-radius: 50%;  /* Make the image round */
+    filter: invert(0%); /* No color inversion for light theme */
 }
 
 #themeToggleBtn:hover{
-    background-color: #E65100;  /* Darker orange on hover */
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Softer shadow */
     box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3); /* Google Orange glow effect */
 }
+
+.language-select {
+    margin-top: 10px;
+    width: 150px;
+    height: 40px;
+    font-size: 1rem;
+    background-color: #ffffff; /* Light background */
+    color: #333333;            /* Dark text */
+    border: 1px solid #cccccc; /* Light border */
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.language-select:hover {
+    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3);
+}
+

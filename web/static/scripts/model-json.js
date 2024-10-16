@@ -1,11 +1,12 @@
 document.getElementById('modelBtn').addEventListener('click', function() {
     const inputJson = document.getElementById('inputJson').value;
     const outputBox = document.getElementById('outputBox');
+    const selectedLanguage = document.getElementById('languageSelect').value;
 
     try {
         const parsedJson = JSON.parse(inputJson);
 
-        fetch('http://127.0.0.1:5000/model', {
+        fetch('http://127.0.0.1:5000/model?language=' + selectedLanguage, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
