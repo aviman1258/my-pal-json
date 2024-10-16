@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON Analyzer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <title>My Pal JSON</title>
+    <!-- Dark theme stylesheet loaded by default -->
+    <link id="themeStylesheet" rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
 </head>
 <body>
     <header>
@@ -17,14 +18,31 @@
         <div class="middle">
             <button id="analyzeBtn">Analyze</button>
             <button id="modelBtn">Model</button>
+
+            <select id="languageSelect" class="language-select">
+                <option value="csharp">C#</option>
+                <option value="python">Python</option>
+                <option value="javascript">Javascript</option>
+                <option value="cplusplus">C++</option>
+                <option value="java">Java</option>
+                <option value="go">Go</option>
+            </select>
         </div>
         <div class="right">
-            <!-- Output textbox where both analyze and model results will be displayed -->
+            <!-- Theme toggle button with data attributes for URLs -->
+            <button id="themeToggleBtn" class="theme-toggle"
+                    data-lightstyle-url="{{ url_for('static', filename='styles/lightstyle.css') }}"
+                    data-darkstyle-url="{{ url_for('static', filename='styles/style.css') }}"
+                    data-sun-icon="{{ url_for('static', filename='images/sun.svg') }}"
+                    data-moon-icon="{{ url_for('static', filename='images/moon.svg') }}">
+                <img id="themeIcon" src="{{ url_for('static', filename='images/sun.svg') }}" alt="Toggle Theme">
+            </button>
             <textarea id="outputBox" placeholder="Output will be displayed here" readonly></textarea>
         </div>
     </div>
 
     <script src="{{ url_for('static', filename='scripts/validate-json.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/model-json.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/theme-toggle.js') }}"></script>
 </body>
 </html>

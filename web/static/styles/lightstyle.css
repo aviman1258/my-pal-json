@@ -9,24 +9,24 @@ body, html {
     font-family: 'Roboto', sans-serif;
     display: flex;
     flex-direction: column;
-    background-color: #121212; /* Dark background for dark mode */
-    color: #e0e0e0;
+    background-color: #f5f5f5; /* Light background for light mode */
+    color: #333333; /* Darker text for readability */
 }
 
 header {
     width: 100%;
     text-align: center;
     padding: 20px 0;
-    background-color: #1f1f1f; /* Slightly lighter gray for the header */
-    color: #e0e0e0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.7);
+    background-color: #4285F4; /* Google Blue for header */
+    color: #ffffff; /* White text for contrast */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     margin: 0;
     font-size: 2rem;
     font-weight: 500;
-    color: #ffffff; /* Bright white text for clarity */
+    color: #ffffff; /* White text for clarity */
 }
 
 .container {
@@ -63,19 +63,18 @@ h1 {
     height: 80%;
     resize: none;
     font-size: 1rem;
-    background-color: #2e2e2e;
-    color: #e0e0e0; /* Darker text for readability */
-    border: none;
+    background-color: #ffffff; /* Light background for text areas */
+    color: #333333; /* Dark text for readability */
+    border: 1px solid #cccccc; /* Light border for input fields */
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
     padding: 20px;
     transition: all 0.3s ease;
     margin: 10px;
 }
 
-
 .left textarea:hover, .right textarea:hover {
-    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7); /* Green glow effect */
+    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3); /* Google Orange glow effect */
     outline: none;
 }
 
@@ -93,20 +92,20 @@ h1 {
     margin: 1px 0; /* Space between the buttons */
     width: 150px;  /* Fixed width for both buttons */
     height: 50px;  /* Fixed height for both buttons */
-    background-color: #4caf50;  /* Green background color */
+    background-color: #FF6F00;  /* Google Orange background color */
     color: white; /* White text on button */
     border-radius: 30px; /* Rounded buttons */
     border: none;
     cursor: pointer;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .middle button:hover {
-    background-color: #43a047;  /* Darker green on hover */
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.7);
-    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7); /* Green glow effect */
+    background-color: #E65100;  /* Darker orange on hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Softer shadow on hover */
+    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3); /* Google Orange glow effect */
 }
 
 #themeToggleBtn {
@@ -121,19 +120,19 @@ h1 {
     height: 50px; /* Set height for round shape */
     border-radius: 50%; /* This makes the button round */
     padding: 5px; /* Add padding for a nicer look */
-    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.089); /* Optional shadow for depth */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Optional shadow for depth */
 }
 
 #themeToggleBtn img {
     width: 100%;  /* Make the image fill the button */
     height: 100%;
     border-radius: 50%;  /* Make the image round */
-    filter: invert(100%); /* For dark theme, invert image colors */
+    filter: invert(0%); /* No color inversion for light theme */
 }
 
 #themeToggleBtn:hover{
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.7);
-    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7); /* Green glow effect */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Softer shadow */
+    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3); /* Google Orange glow effect */
 }
 
 .language-select {
@@ -141,16 +140,17 @@ h1 {
     width: 150px;
     height: 40px;
     font-size: 1rem;
-    background-color: #2e2e2e; /* Dark background */
-    color: #e0e0e0;            /* Light text */
-    border: none;
+    background-color: #ffffff; /* Light background */
+    color: #333333;            /* Dark text */
+    border: 1px solid #cccccc; /* Light border */
     border-radius: 30px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .language-select:hover {
-    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7);
+    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3);
 }
+
