@@ -1,22 +1,33 @@
 document.getElementById('copyBtn').addEventListener('click', function() {
     const outputText = document.getElementById('outputBox').value;
+    const copyButton = document.getElementById('copyBtn');
 
     if (outputText) {
-        // Create a temporary textarea element to hold the text
-        const tempTextArea = document.createElement('textarea');
-        tempTextArea.value = outputText;
-        document.body.appendChild(tempTextArea);
+        // Use the Clipboard API to copy text
+        navigator.clipboard.writeText(outputText)
+        .then(() => {
+            // Flash the button green on success
+            copyButton.classList.add('flash-success');
 
-        // Select the text and copy it to the clipboard
-        tempTextArea.select();
-        document.execCommand('copy');
+            // Remove the flash effect after a short delay
+            setTimeout(() => {
+                copyButton.classList.remove('flash-success');
+            }, 500);  // Flash duration
+        })
+        .catch(() => {
+            // Flash the button red on error
+            copyButton.classList.add('flash-error');
 
-        // Remove the temporary element
-        document.body.removeChild(tempTextArea);
-
-        // Optionally, notify the user
-        alert('Text copied to clipboard!');
+            setTimeout(() => {
+                copyButton.classList.remove('flash-error');
+            }, 500);  // Flash duration
+        });
     } else {
-        alert('No text to copy!');
+        // Flash the button red if there's nothing to copy
+        copyButton.classList.add('flash-error');
+
+        setTimeout(() => {
+            copyButton.classList.remove('flash-error');
+        }, 500);  // Flash duration
     }
 });

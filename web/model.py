@@ -1,10 +1,10 @@
 import logging
-from generators.csharp import generate_csharp_class as generate_csharp
-from generators.python import generate_python_class as generate_python
-from generators.javascript import generate_javascript_class as generate_javascript
-from generators.cplusplus import generate_cpp_class as generate_cpp
-from generators.java import generate_java_class as generate_java
-from generators.go import generate_go_struct as generate_go
+from .generators.csharp import generate_csharp_class as generate_csharp
+from .generators.python import generate_python_class as generate_python
+from .generators.javascript import generate_javascript_class as generate_javascript
+from .generators.cplusplus import generate_cpp_class as generate_cpp
+from .generators.java import generate_java_class as generate_java
+from .generators.go import generate_go_struct as generate_go
 from flask import Blueprint, request, jsonify
 
 logger = logging.getLogger(__name__)
