@@ -41,11 +41,11 @@ def generate_classes():
     elif language == 'javascript':
         class_files[f"{base_class_name}.js"] = generate_javascript(base_class_name, root_data)
     elif language == 'cplusplus':
-        class_files[f"{base_class_name}.cpp"] = generate_cpp(base_class_name, root_data, class_files)
+        class_files[f"{base_class_name}.cpp"] = generate_cpp(base_class_name, root_data)
     elif language == 'java':
-        class_files[f"{base_class_name}.java"] = generate_java(base_class_name, root_data, class_files)
+        class_files[f"{base_class_name}.java"] = generate_java(base_class_name, root_data)
     elif language == 'go':
-        class_files[f"{base_class_name}.go"] = generate_go(base_class_name, root_data, class_files)
+        class_files[f"{base_class_name}.go"] = generate_go(base_class_name, root_data)
         
     # Concatenate all class files into a single text block
     all_classes_text = "\n\n".join(class_files.values())
