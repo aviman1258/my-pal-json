@@ -32,14 +32,14 @@ def generate_classes():
         base_class_name = 'Root'
         root_data = json_data
 
-    # Generate the base class and nested classes  
+    # Generate the base class and nested classes  from 
     
     if language == 'csharp':
         class_files[f"{base_class_name}.cs"] = generate_csharp(base_class_name, root_data, class_files)
     elif language == 'python':
         class_files[f"{base_class_name}.py"] = generate_python(json_data, base_class_name, 0)
     elif language == 'javascript':
-        class_files[f"{base_class_name}.js"] = generate_javascript(base_class_name, root_data, class_files)
+        class_files[f"{base_class_name}.js"] = generate_javascript(base_class_name, root_data)
     elif language == 'cplusplus':
         class_files[f"{base_class_name}.cpp"] = generate_cpp(base_class_name, root_data, class_files)
     elif language == 'java':
