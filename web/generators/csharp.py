@@ -1,10 +1,17 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 # Function to generate C# class structure from a dictionary or a primitive type
 def generate_csharp_class(class_name, data, class_files):
+    logging.info("Generating C# class: " + class_name)
     csharp_code = f'public class {class_name}\n{{\n'
 
     if isinstance(data, dict):
         for key, value in data.items():
+            logging.info(f"Key: {key}, Value: {value}")
             property_type = get_csharp_type(value)
+            logging.info("PropertyType: " + property_type)
             if isinstance(value, dict):
                 nested_class_name = key.capitalize()
                 # Recursively generate nested class for this dictionary
