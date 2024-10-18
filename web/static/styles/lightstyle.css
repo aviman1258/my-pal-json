@@ -37,6 +37,7 @@ h1 {
     width: 100%;
     padding: 20px; /* Add padding around the entire container */
     box-sizing: border-box; /* Ensures padding is inside the total width/height */
+    margin-top: 5px;
 }
 
 .left, .right {
@@ -204,4 +205,134 @@ h1 {
 .copy-button.flash-error {
     background-color: #f44336;  /* Red for error */
     box-shadow: 0 0 10px 2px rgba(244, 67, 54, 0.7);  /* Red glow */
+}
+
+/* API Request Bar */
+.api-request-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 40px);
+    padding: 10px;
+    background-color: #f1f1f1; /* Light background for the request bar */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Softer shadow for light theme */
+    margin-bottom: 20px; /* Space between the header and the rest of the content */
+    margin: 20px auto; /* Center the bar horizontally and add a gap at the top and bottom */
+    border-radius: 8px; /* Optional: Add rounded corners to match modern UI styles */
+}
+
+/* HTTP Method Dropdown */
+.http-method-select {
+    width: 80px;
+    height: 40px;
+    background-color: #ffffff; /* Light background for dropdown */
+    color: #333333; /* Dark text for readability */
+    border: 1px solid #cccccc; /* Light border */
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.http-method-select:hover {
+    box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
+}
+
+/* API URL Input */
+.api-url-input {
+    flex-grow: 1;
+    height: 40px;
+    background-color: #ffffff; /* Light background for input */
+    color: #333333; /* Dark text for readability */
+    border: 1px solid #cccccc; /* Light border */
+    border-radius: 5px;
+    padding: 10px;
+    margin: 0 10px;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    transition: box-shadow 0.3s ease;
+}
+
+.api-url-input:hover {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
+}
+
+.api-url-input:focus {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
+}
+
+/* Send Button */
+.send-button {
+    width: 100px;
+    height: 40px;
+    background-color: #FF6F00; /* Orange background color for send button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.send-button:hover {
+    background-color: #E65100; /* Darker orange on hover */
+    box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
+}
+
+/* Headers Section */
+.headers-section {
+    width: calc(100% - 40px); /* Ensure it aligns with the API request bar */
+    margin: 5px auto; /* Add spacing around the section */
+    background-color: #f1f1f1; /* Light background for light mode */
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow for light mode */
+    font-size: 0.9rem; /* Smaller font size for all text in headers section */
+}
+
+/* Header grid */
+.headers-grid {
+    display: grid;
+    grid-template-columns: 1fr 12fr; /* Make the value column (right) wider than key column */
+    gap: 10px; /* Gap between key-value pairs */
+    align-items: center; /* Center vertically */
+    padding-right: 15px;
+}
+
+/* Header key (left column) */
+.header-key {
+    color: #333333; /* Dark text for light mode */
+    padding: 5px 10px;
+    font-weight: normal; /* Ensure no bold text */
+    text-align: right;
+}
+
+/* Header value (right column) */
+.header-value {
+    width: 100%;
+    height: 25px;
+    padding: 8px;
+    font-size: 1rem;
+    background-color: #ffffff; /* Light background for input */
+    color: #333333; /* Dark text for readability */
+    border: 1px solid #cccccc; /* Light border */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for light mode */
+    transition: box-shadow 0.3s ease;
+}
+
+.header-value:focus {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
+}
+
+.header-value:hover {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
 }

@@ -11,6 +11,32 @@
     <header>
         <h1>My Pal JSON</h1>
     </header>
+
+    <!-- API Request Bar -->
+    <div class="api-request-bar">
+        <select id="httpMethod" class="http-method-select">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+        </select>
+        <input type="text" id="apiUrl" placeholder="Enter API URL" class="api-url-input">
+        <button id="sendBtn" class="send-button">Send</button>
+    </div>
+
+    <!-- Headers Grid Section -->
+    <div class="headers-section">
+        <div class="headers-grid">
+            <div class="header-key">Content-Type</div>
+            <input type="text" class="header-value" value="application/json">
+            
+            <div class="header-key">Authorization</div>
+            <input type="text" class="header-value" placeholder="Bearer token">
+
+            <div class="header-key">Accept</div>
+            <input type="text" class="header-value" value="*/*">
+        </div>
+    </div>
+
     <div class="container">
         <div class="left">
             <textarea id="inputJson" placeholder="Input JSON here"></textarea>

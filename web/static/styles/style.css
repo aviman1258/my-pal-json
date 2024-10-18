@@ -37,6 +37,7 @@ h1 {
     width: 100%;
     padding: 20px; /* Add padding around the entire container */
     box-sizing: border-box; /* Ensures padding is inside the total width/height */
+    margin-top: 5px;
 }
 
 .left, .right {
@@ -205,4 +206,134 @@ h1 {
 .copy-button.flash-error {
     background-color: #f44336;  /* Red for error */
     box-shadow: 0 0 10px 2px rgba(244, 67, 54, 0.7);  /* Red glow */
+}
+
+/* API Request Bar */
+.api-request-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 40px);
+    padding: 10px;
+    background-color: #1f1f1f; /* Dark background for the request bar (adjust for light theme) */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px; /* Space between the header and the rest of the content */
+    margin: 20px auto; /* Center the bar horizontally and add a gap at the top and bottom */
+    border-radius: 8px; /* Optional: Add rounded corners to match modern UI styles */
+}
+
+/* HTTP Method Dropdown */
+.http-method-select {
+    width: 80px;
+    height: 40px;
+    background-color: #2e2e2e;
+    color: #e0e0e0;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.http-method-select:hover {
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+
+/* API URL Input */
+.api-url-input {
+    flex-grow: 1;
+    height: 40px;
+    background-color: #2e2e2e;
+    color: #e0e0e0;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 0 10px;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.3s ease;
+}
+
+.api-url-input:focus {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+
+.api-url-input:hover {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+
+/* Send Button */
+.send-button {
+    width: 100px;
+    height: 40px;
+    background-color: #4caf50; /* Green background color for send button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.send-button:hover {
+    background-color: #43a047; /* Darker green on hover */
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+
+/* Headers Section */
+.headers-section {
+    width: calc(100% - 40px); /* Ensure it aligns with the API request bar */
+    margin: 5px auto; /* Add spacing around the section */
+    background-color: #1f1f1f; /* Dark background for dark mode */
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.7); /* Darker shadow for dark mode */
+    font-size: 0.9rem; /* Smaller font size for all text in headers section */
+}
+
+/* Header grid */
+.headers-grid {
+    display: grid;
+    grid-template-columns: 1fr 12fr; /* Make the value column (right) wider than key column */
+    gap: 10px; /* Gap between key-value pairs */
+    align-items: center; /* Center vertically */
+    padding-right: 15px;
+}
+
+/* Header key (left column) */
+.header-key {
+    color: #e0e0e0; /* Light text for dark mode */
+    padding: 5px 10px;
+    font-weight: normal; /* Ensure no bold text */
+    text-align: right;
+}
+
+/* Header value (right column) */
+.header-value {
+    width: 100%;
+    height: 25px;
+    padding: 8px;
+    font-size: 1rem;
+    background-color: #2e2e2e; /* Dark background for input */
+    color: #e0e0e0; /* Light text for readability */
+    border: 1px solid #444444; /* Darker border */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Stronger shadow for dark mode */
+    transition: box-shadow 0.3s ease;
+}
+
+.header-value:focus {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect for dark mode */
+}
+
+.header-value:hover {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect for dark mode */
 }
