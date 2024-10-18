@@ -1,35 +1,45 @@
-def generate_python_class(class_name, data, class_files):
-    python_code = f'class {class_name}:\n'
+import json
 
-    if isinstance(data, dict):
-        for key, value in data.items():
-            property_type = get_python_type(value)
-            if isinstance(value, dict):
-                nested_class_name = key.capitalize()
-                class_files[f"{nested_class_name}.py"] = generate_python_class(nested_class_name, value, class_files)
-                python_code += f'    {key}: "{nested_class_name}"\n'
-            elif isinstance(value, list):
-                list_type = get_python_type(value[0]) if value else 'object'
-                python_code += f'    {key}: List[{list_type}]\n'
+def generate_python_class(json_data, class_name="GeneratedClass", indent_level=0):
+    # Helper function to generate indent
+    def indent(level):
+        return " " * 4 * level
+
+    # Start building the class definition
+    class_definition = f"{indent(indent_level)}class {class_name}:\n"
+    class_definition += f"{indent(indent_level + 1)}def __init__(self, "
+
+    # Initialize a list to store the constructor parameters
+    constructor_params = []
+    nested_class_definitions = ""
+    
+    # Extract keys and generate constructor parameters
+    for key, value in json_data.items():
+        if isinstance(value, dict):
+            # Handle nested dictionary by generating a new class
+            nested_class_name = key.capitalize()
+            constructor_params.append(f"{key}: {nested_class_name}")
+            nested_class_definitions += generate_python_class(value, class_name=nested_class_name, indent_level=indent_level + 1)
+        elif isinstance(value, list):
+            if value and isinstance(value[0], dict):
+                # Handle list of nested dictionaries
+                nested_class_name = key.capitalize()[:-1]  # Remove the 's' from key for plural
+                constructor_params.append(f"{key}: list[{nested_class_name}]")
+                nested_class_definitions += generate_python_class(value[0], class_name=nested_class_name, indent_level=indent_level + 1)
             else:
-                python_code += f'    {key}: {property_type}\n'
-    else:
-        python_code += f'    value: {get_python_type(data)}\n'
+                constructor_params.append(f"{key}: list")
+        else:
+            # Handle primitive types
+            constructor_params.append(f"{key}: {type(value).__name__}")
 
-    return python_code
+    # Add constructor parameters to the init method
+    class_definition += ", ".join(constructor_params) + "):\n"
 
-def get_python_type(value):
-    if isinstance(value, int):
-        return 'int'
-    elif isinstance(value, float):
-        return 'float'
-    elif isinstance(value, bool):
-        return 'bool'
-    elif isinstance(value, str):
-        return 'str'
-    elif isinstance(value, list):
-        return 'List'
-    elif isinstance(value, dict):
-        return 'dict'
-    else:
-        return 'object'
+    # Add class attributes inside the constructor
+    for key, value in json_data.items():
+        class_definition += f"{indent(indent_level + 2)}self.{key} = {key}\n"
+
+    # Append any nested class definitions after the current class
+    class_definition += "\n" + nested_class_definitions
+
+    return class_definition

@@ -39,23 +39,13 @@ h1 {
     box-sizing: border-box; /* Ensures padding is inside the total width/height */
 }
 
-.left{
+.left, .right {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 20px; /* Add padding to the right section */
-    box-sizing: border-box; /* Ensures the padding is included inside the width */
-}
-
-.right{
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    padding: 20px; /* Add padding to the right section */
-    box-sizing: border-box; /* Ensures the padding is included inside the width */
+    padding: 20px;
+    box-sizing: border-box; /* Ensures padding is inside the width */
 }
 
 .left textarea, .right textarea {
@@ -69,8 +59,8 @@ h1 {
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
     padding: 20px;
-    transition: all 0.3s ease;
     margin: 10px;
+    box-sizing: border-box; /* Ensure consistent padding and sizing */
 }
 
 .left textarea:hover, .right textarea:hover {
@@ -116,8 +106,8 @@ h1 {
     border: none;
     cursor: pointer;
     transition: box-shadow 0.3s ease;
-    width: 50px;  /* Set width for round shape */
-    height: 50px; /* Set height for round shape */
+    width: 35px;  /* Set width for round shape */
+    height: 35px; /* Set height for round shape */
     border-radius: 50%; /* This makes the button round */
     padding: 5px; /* Add padding for a nicer look */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Optional shadow for depth */
@@ -130,7 +120,7 @@ h1 {
     filter: invert(0%); /* No color inversion for light theme */
 }
 
-#themeToggleBtn:hover{
+#themeToggleBtn:hover {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Softer shadow */
     box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3); /* Google Orange glow effect */
 }
@@ -148,9 +138,70 @@ h1 {
     padding: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
 }
 
 .language-select:hover {
     box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3);
 }
 
+.output-container {
+    position: relative;
+    width: 100%;
+    height: 80%;
+    padding: 0;  /* Ensure no extra padding around the container */
+    margin: 0;   /* Ensure no extra margin */
+}
+
+#outputBox {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    font-size: 1rem;
+    background-color: #ffffff; /* Light background */
+    color: #333333;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.copy-button {
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;  /* Ensure no extra padding around the button */
+    margin: 0;  /* Ensure no margins */
+    width: 24px;  /* Adjust size if needed */
+    height: 24px;
+    display: flex;
+    justify-content: center;  /* Ensure the image is centered */
+    align-items: center;  /* Ensure the image is centered */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.copy-button:hover {
+    box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.7); /* Orange glow effect */
+}
+
+.copy-icon {
+    display: block;  /* Ensures no extra space is added around the image */
+    width: 20px;
+    height: 20px;
+    margin: 0 auto;  /* Center the image if needed */
+    filter: none;  /* No color inversion for light theme */
+}
+
+.copy-button.flash-success {
+    background-color: #FF6F00;  /* Orange background for success */
+    box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.7);  /* Orange glow effect */
+}
+
+.copy-button.flash-error {
+    background-color: #f44336;  /* Red for error */
+    box-shadow: 0 0 10px 2px rgba(244, 67, 54, 0.7);  /* Red glow */
+}

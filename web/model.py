@@ -12,7 +12,6 @@ model_bp = Blueprint('model_bp', __name__)
 def generate_classes():
     json_data = request.get_json()
     language = request.args.get('language', 'csharp')
-    print('language: ', language)
 
     if not json_data:
         return jsonify({"error": "Invalid or no JSON data received"}), 400
@@ -28,20 +27,20 @@ def generate_classes():
         base_class_name = 'Root'
         root_data = json_data
 
-    # Generate the base class and nested classes  
+    # Generate the base class and nested classes  from 
     
     if language == 'csharp':
         class_files[f"{base_class_name}.cs"] = generate_csharp(base_class_name, root_data, class_files)
     elif language == 'python':
-        class_files[f"{base_class_name}.py"] = generate_python(base_class_name, root_data, class_files)
+        class_files[f"{base_class_name}.py"] = generate_python(json_data, base_class_name, 0)
     elif language == 'javascript':
-        class_files[f"{base_class_name}.py"] = generate_javascript(base_class_name, root_data, class_files)
+        class_files[f"{base_class_name}.js"] = generate_javascript(base_class_name, root_data)
     elif language == 'cplusplus':
-        class_files[f"{base_class_name}.py"] = generate_cpp(base_class_name, root_data, class_files)
+        class_files[f"{base_class_name}.cpp"] = generate_cpp(base_class_name, root_data)
     elif language == 'java':
-        class_files[f"{base_class_name}.py"] = generate_java(base_class_name, root_data, class_files)
+        class_files[f"{base_class_name}.java"] = generate_java(base_class_name, root_data)
     elif language == 'go':
-        class_files[f"{base_class_name}.py"] = generate_go(base_class_name, root_data, class_files)
+        class_files[f"{base_class_name}.go"] = generate_go(base_class_name, root_data)
         
     # Concatenate all class files into a single text block
     all_classes_text = "\n\n".join(class_files.values())
