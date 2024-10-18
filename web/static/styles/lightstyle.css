@@ -106,8 +106,8 @@ h1 {
     border: none;
     cursor: pointer;
     transition: box-shadow 0.3s ease;
-    width: 50px;  /* Set width for round shape */
-    height: 50px; /* Set height for round shape */
+    width: 35px;  /* Set width for round shape */
+    height: 35px; /* Set height for round shape */
     border-radius: 50%; /* This makes the button round */
     padding: 5px; /* Add padding for a nicer look */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Optional shadow for depth */
@@ -138,6 +138,7 @@ h1 {
     padding: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
 }
 
 .language-select:hover {

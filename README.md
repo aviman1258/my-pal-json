@@ -31,7 +31,7 @@ This project provides tools to generate both C# class files and a tree structure
 
 ### Steps
 
-- Go to root folder in terminal.
+- Go to root folder in terminal.fef9fa0b7d76
 - Spin up contaier:
 
 ```bash

@@ -1,4 +1,3 @@
-import logging
 from .generators.csharp import generate_csharp_class as generate_csharp
 from .generators.python import generate_python_class as generate_python
 from .generators.javascript import generate_javascript_class as generate_javascript
@@ -7,18 +6,14 @@ from .generators.java import generate_java_class as generate_java
 from .generators.go import generate_go_struct as generate_go
 from flask import Blueprint, request, jsonify
 
-logger = logging.getLogger(__name__)
-
 model_bp = Blueprint('model_bp', __name__)
 
 @model_bp.route('/model', methods=['POST'])
 def generate_classes():
     json_data = request.get_json()
     language = request.args.get('language', 'csharp')
-    logger.info('Language to model: ' + language)
 
     if not json_data:
-        logger.error("Invalid or no JSON data received.")
         return jsonify({"error": "Invalid or no JSON data received"}), 400
 
     class_files = {}
@@ -49,8 +44,6 @@ def generate_classes():
         
     # Concatenate all class files into a single text block
     all_classes_text = "\n\n".join(class_files.values())
-
-    logging.info("Model: " + all_classes_text)
 
     # Return the concatenated class content as plain text
 

@@ -5,12 +5,6 @@ from .model import model_bp
 import os
 import webbrowser
 from threading import Timer  # Import Timer
-import logging
-import logging.config
-
-logging.config.fileConfig('logging.conf')
-
-logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
@@ -22,11 +16,9 @@ app.register_blueprint(model_bp)
 # Serve json-analyzer.html as a template
 @app.route('/')
 def serve_html():
-    logger.info("Serving json-analyzer.html")
     return render_template('json-analyzer.html')  # Renders the HTML from templates folder
 
 def open_browser():
-    logger.info("Opening browser...")
     webbrowser.open_new("http://127.0.0.1:5000")
 
 if __name__ == "__main__":
