@@ -23,6 +23,33 @@ This project provides tools to generate both C# class files and a tree structure
   - Creates C# classes that model the JSON schema.
   - Supports Cross-Origin Resource Sharing (CORS) for easy communication between frontend and backend.
 
+**Docker Container Enables**:
+
+- Allows the user tp run a docker container that will give the user access to all capabilities
+
+## Docker
+
+### Steps
+
+- Go to root folder in terminal.fef9fa0b7d76
+- Spin up contaier:
+
+```bash
+docker-compose up -d
+```
+
+- Once the container is up and running, go to `localhost:5000`.
+
+
+### Pipeline
+
+1. `docker build -t achandra1258/my-pal-json:1.1.1 .`
+2. `docker tag achandra1258/my-pal-json:1.1.0 achandra1258/my-pal-json:latest`
+3. `docker push achandra1258/my-pal-json --all-tags`
+4. `docker pull achandra1258/my-pal-json:latest`
+5. `docker run --name my-pal-json-server-app -d -p 5000:5000 achandra1258/my-pal-json:latest`
+6. Go to **localhost:5000** in your browser.
+
 ## Batch File Usage
 
 ### Prerequisites
