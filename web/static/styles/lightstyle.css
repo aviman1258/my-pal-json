@@ -9,16 +9,16 @@ body, html {
     font-family: 'Roboto', sans-serif;
     display: flex;
     flex-direction: column;
-    background-color: #f5f5f5; /* Light background for light mode */
-    color: #333333; /* Darker text for readability */
+    background-color: #f5f5f5;
+    color: #333333;
 }
 
 header {
     width: 100%;
     text-align: center;
     padding: 20px 0;
-    background-color: #4285F4; /* Google Blue for header */
-    color: #ffffff; /* White text for contrast */
+    background-color: #4285F4;
+    color: #ffffff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -26,7 +26,7 @@ h1 {
     margin: 0;
     font-size: 2rem;
     font-weight: 500;
-    color: #ffffff; /* White text for clarity */
+    color: #ffffff;
 }
 
 .container {
@@ -35,8 +35,8 @@ h1 {
     flex-grow: 1;
     height: 100%;
     width: 100%;
-    padding: 20px; /* Add padding around the entire container */
-    box-sizing: border-box; /* Ensures padding is inside the total width/height */
+    padding: 5px; 
+    box-sizing: border-box;
     margin-top: 5px;
 }
 
@@ -45,8 +45,9 @@ h1 {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 20px;
-    box-sizing: border-box; /* Ensures padding is inside the width */
+    padding: 5px;
+    box-sizing: border-box;
+    margin-top: 5px;
 }
 
 .left textarea, .right textarea {
@@ -54,18 +55,18 @@ h1 {
     height: 80%;
     resize: none;
     font-size: 1rem;
-    background-color: #ffffff; /* Light background for text areas */
-    color: #333333; /* Dark text for readability */
-    border: 1px solid #cccccc; /* Light border for input fields */
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #cccccc;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    margin: 10px;
-    box-sizing: border-box; /* Ensure consistent padding and sizing */
+    transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 .left textarea:hover, .right textarea:hover {
-    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3); /* Google Orange glow effect */
+    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3);
     outline: none;
 }
 
@@ -80,50 +81,50 @@ h1 {
 .middle button {
     font-size: 1.1rem;
     padding: 10px 20px;
-    margin: 1px 0; /* Space between the buttons */
-    width: 150px;  /* Fixed width for both buttons */
-    height: 50px;  /* Fixed height for both buttons */
-    background-color: #FF6F00;  /* Google Orange background color */
-    color: white; /* White text on button */
-    border-radius: 30px; /* Rounded buttons */
+    margin: 1px 0;
+    width: 150px;
+    height: 50px;
+    background-color: #FF6F00;
+    color: white;
+    border-radius: 30px;
     border: none;
     cursor: pointer;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .middle button:hover {
-    background-color: #E65100;  /* Darker orange on hover */
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Softer shadow on hover */
-    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3); /* Google Orange glow effect */
+    background-color: #E65100;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3);
 }
 
 #themeToggleBtn {
     position: absolute;
-    top: 20px; /* Adjust to a reasonable position inside the header */
-    right: 20px; /* Space it away from the edge of the page */
+    top: 20px;
+    right: 20px;
     background: none;
     border: none;
     cursor: pointer;
     transition: box-shadow 0.3s ease;
-    width: 35px;  /* Set width for round shape */
-    height: 35px; /* Set height for round shape */
-    border-radius: 50%; /* This makes the button round */
-    padding: 5px; /* Add padding for a nicer look */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Optional shadow for depth */
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
 }
 
 #themeToggleBtn img {
-    width: 100%;  /* Make the image fill the button */
+    width: 100%;
     height: 100%;
-    border-radius: 50%;  /* Make the image round */
-    filter: invert(0%); /* No color inversion for light theme */
+    border-radius: 50%;
+    filter: invert(0%);
 }
 
 #themeToggleBtn:hover {
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Softer shadow */
-    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3); /* Google Orange glow effect */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3);
 }
 
 .language-select {
@@ -131,9 +132,9 @@ h1 {
     width: 150px;
     height: 40px;
     font-size: 1rem;
-    background-color: #ffffff; /* Light background */
-    color: #333333;            /* Dark text */
-    border: 1px solid #cccccc; /* Light border */
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #cccccc;
     border-radius: 30px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 5px;
@@ -150,8 +151,9 @@ h1 {
     position: relative;
     width: 100%;
     height: 80%;
-    padding: 0;  /* Ensure no extra padding around the container */
-    margin: 0;   /* Ensure no extra margin */
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 #outputBox {
@@ -159,7 +161,7 @@ h1 {
     height: 100%;
     resize: none;
     font-size: 1rem;
-    background-color: #ffffff; /* Light background */
+    background-color: #ffffff;
     color: #333333;
     border: 1px solid #cccccc;
     border-radius: 8px;
