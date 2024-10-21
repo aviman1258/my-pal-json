@@ -25,16 +25,8 @@
 
     <!-- Headers Grid Section -->
     <div class="headers-section">
-        <div class="headers-grid">
-            <div class="header-key">Content-Type</div>
-            <input type="text" class="header-value" value="application/json">
-            
-            <div class="header-key">Authorization</div>
-            <input type="text" class="header-value" placeholder="Bearer token">
-
-            <div class="header-key">Accept</div>
-            <input type="text" class="header-value" value="*/*">
-
+        <div class="headers-grid" id="headersGrid">
+            <!-- Dynamic rows for header key-value pairs will be added here by JavaScript -->
         </div>
     </div>
 
@@ -76,5 +68,6 @@
     <script src="{{ url_for('static', filename='scripts/model-json.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/theme-toggle.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/copy-output.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/headers-management.js') }}"></script>
 </body>
 </html>

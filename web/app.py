@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_cors import CORS
-from .analyze import analyze_bp
-from .model import model_bp
+from analyze import analyze_bp
+from model import model_bp
 import os
 import webbrowser
 from threading import Timer  # Import Timer
@@ -25,4 +25,4 @@ if __name__ == "__main__":
     if not os.environ.get('FLASK_DEBUG') == 'production':
         Timer(1, open_browser).start()  # Open the browser after a 1-second delay
     
-    app.run(debug=False)
+    app.run(debug=True)

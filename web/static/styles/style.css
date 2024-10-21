@@ -178,6 +178,7 @@ h1 {
     border: none;
     cursor: pointer;
     padding: 0;
+    margin: 0;
     width: 24px;
     height: 24px;
     display: flex;
@@ -300,22 +301,14 @@ h1 {
 /* Header grid */
 .headers-grid {
     display: grid;
-    grid-template-columns: 1fr 12fr; /* Make the value column (right) wider than key column */
-    gap: 10px; /* Gap between key-value pairs */
+    grid-template-columns: 1fr 4fr; /* Make the value column (right) wider than key column */
+    column-gap: 20px;
+    row-gap: 5px;
     align-items: center; /* Center vertically */
     padding-right: 15px;
 }
 
-/* Header key (left column) */
-.header-key {
-    color: #e0e0e0; /* Light text for dark mode */
-    padding: 5px 10px;
-    font-weight: normal; /* Ensure no bold text */
-    text-align: right;
-}
-
-/* Header value (right column) */
-.header-value {
+.header-value, .header-key-input {
     width: 100%;
     height: 25px;
     padding: 8px;
@@ -328,12 +321,12 @@ h1 {
     transition: box-shadow 0.3s ease;
 }
 
-.header-value:focus {
+.header-value:focus, .header-key-input:focus {
     outline: none;
     box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect for dark mode */
 }
 
-.header-value:hover {
+.header-value:hover, .header-key-input:hover {
     outline: none;
     box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect for dark mode */
 }

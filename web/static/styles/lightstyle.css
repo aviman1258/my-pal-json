@@ -301,22 +301,14 @@ h1 {
 /* Header grid */
 .headers-grid {
     display: grid;
-    grid-template-columns: 1fr 12fr; /* Make the value column (right) wider than key column */
-    gap: 10px; /* Gap between key-value pairs */
+    grid-template-columns: 1fr 4fr; /* Make the value column (right) wider than key column */
+    column-gap: 20px;
+    row-gap: 5px;
     align-items: center; /* Center vertically */
     padding-right: 15px;
 }
 
-/* Header key (left column) */
-.header-key {
-    color: #333333; /* Dark text for light mode */
-    padding: 5px 10px;
-    font-weight: normal; /* Ensure no bold text */
-    text-align: right;
-}
-
-/* Header value (right column) */
-.header-value {
+.header-value, .header-key-input {
     width: 100%;
     height: 25px;
     padding: 8px;
@@ -329,12 +321,12 @@ h1 {
     transition: box-shadow 0.3s ease;
 }
 
-.header-value:focus {
+.header-value:focus, .header-key-input:focus {
     outline: none;
     box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
 }
 
-.header-value:hover {
+.header-value:hover, .header-key-input:hover {
     outline: none;
     box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
 }
