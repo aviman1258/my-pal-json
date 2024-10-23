@@ -43,9 +43,8 @@ docker-compose up -d
 
 ### Pipeline
 
-1. `docker build -t achandra1258/my-pal-json:1.1.1 .`
-2. `docker tag achandra1258/my-pal-json:1.1.0 achandra1258/my-pal-json:latest`
-3. `docker push achandra1258/my-pal-json --all-tags`
+1. `docker buildx create --use`
+2. `docker buildx build --platform linux/amd64,linux/arm64 -t achandra1258/my-pal-json:1.3.0 -t achandra1258/my-pal-json:latest --push .`
 4. `docker pull achandra1258/my-pal-json:latest`
 5. `docker run --name my-pal-json-server-app -d -p 5000:5000 achandra1258/my-pal-json:latest`
 6. Go to **localhost:5000** in your browser.
