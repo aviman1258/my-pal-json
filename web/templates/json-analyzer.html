@@ -19,9 +19,16 @@
             <option value="POST">POST</option>
             <option value="PUT">PUT</option>
         </select>
-        <input type="text" id="apiUrl" placeholder="Enter API URL" class="api-url-input">
+        <input type="text" id="apiUrl" placeholder="Enter API Endpoint" class="api-url-input">
         <button id="sendBtn" class="send-button">Send</button>
     </div>
+
+    <button id="toggleHeadersBtn" class="toggle-headers-button">
+        <img id="toggleIcon" src="{{ url_for('static', filename='images/eye-slash.svg') }}" 
+        data-eye="{{ url_for('static', filename='images/eye.svg') }}"
+        data-eye-slash="{{ url_for('static', filename='images/eye-slash.svg') }}"
+        alt="Toggle Headers">
+    </button>
 
     <!-- Headers Grid Section -->
     <div class="headers-section">
@@ -69,5 +76,6 @@
     <script src="{{ url_for('static', filename='scripts/theme-toggle.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/copy-output.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/headers-management.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/headers-toggle.js') }}"></script>
 </body>
 </html>

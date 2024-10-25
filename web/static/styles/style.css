@@ -330,3 +330,39 @@ h1 {
     outline: none;
     box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect for dark mode */
 }
+
+input::placeholder {
+    font-style: italic;
+    color: #888; /* Optional: change color for better visibility */
+}
+
+.toggle-headers-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    margin-left: 10px;
+    margin-bottom: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Optional: adjust shadow */
+    transition: box-shadow 0.3s ease;
+    align-self: start; /* Align button to the start of its container */
+}
+
+.toggle-headers-button img {
+    width: 24px;
+    height: 24px;
+    filter: invert(100%);
+}
+
+.toggle-headers-button:hover img {
+    background-color: rgba(40, 167, 69, 0.2); /* Soft green background */
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+
+.toggle-headers-button:hover img {
+    filter: none; /* Ensure no unwanted color inversion */
+}
