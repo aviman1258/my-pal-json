@@ -340,9 +340,9 @@ input::placeholder {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 5px;
-    margin-left: 10px;
-    margin-bottom: 5px;
+    padding: 0px;
+    margin-left: 25px;
+    margin-bottom: 0px;
     background: none;
     border: none;
     cursor: pointer;
@@ -352,8 +352,8 @@ input::placeholder {
 }
 
 .toggle-headers-button img {
-    width: 24px;
-    height: 24px;
+    width: 15px;
+    height: 15px;
     filter: invert(0%);
 }
 
