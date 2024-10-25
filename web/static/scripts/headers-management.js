@@ -17,7 +17,10 @@ document.addEventListener("DOMContentLoaded", function() {
         const headerValueInput = document.createElement('input');
         headerValueInput.type = 'text';
         headerValueInput.classList.add('header-value');
-        headerValueInput.placeholder = 'Value'; // Placeholder for new row
+        if (key === 'Authorization')
+            headerValueInput.placeholder = 'Bearer Token'; // Placeholder for new row
+        else
+            headerValueInput.placeholder = 'Value'; // Placeholder for new row
         headerValueInput.value = value;
 
         // Append the inputs to the grid
@@ -65,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Prepopulate default rows
     const defaultHeaders = [
         { key: 'Content-Type', value: 'application/json' },
-        { key: 'Authorization', value: 'Bearer token' },
+        { key: 'Authorization', value: '' },
         { key: 'Accept', value: '*/*' }
     ];
 
