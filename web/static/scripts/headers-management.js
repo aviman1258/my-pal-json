@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Function to create a new header row
     function createHeaderRow(key = '', value = '') {
+        console.log(key, value);
+
         // Create header key input
         const headerKeyDiv = document.createElement('div');
         const headerKeyInput = document.createElement('input');
@@ -29,9 +31,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Function to handle adding/removing rows dynamically
     function addInputListeners(keyInput, valueInput) {
-        console.log(keyInput, valueInput);
         function checkRowStatus() {
-            const isLastRow = isLastRowInGrid();
+            const isLastRow = isLastRowInGrid(keyInput);
 
             if (isLastRow && (keyInput.value.trim() !== '' || valueInput.value.trim() !== '')) {
                 // If the user starts typing in the last row, create a new empty row
@@ -39,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
             // If both key and value are empty, remove the row (except the last row)
-            if (isEmptyRow(keyInput, valueInput) && !isLastRowInGrid()) {
+            if (isEmptyRow(keyInput, valueInput) && !isLastRowInGrid(keyInput)) {
                 keyInput.parentElement.remove();
                 valueInput.remove();
             }
@@ -55,10 +56,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Function to check if the row is the last one in the grid
-    function isLastRowInGrid() {
+    function isLastRowInGrid(inputElement) {
         const rows = document.querySelectorAll('.header-key-input');
         const lastKeyInput = rows[rows.length - 1];
-        return lastKeyInput && isEmptyRow(lastKeyInput, lastKeyInput.nextElementSibling);
+        return inputElement === lastKeyInput;
     }
 
     // Prepopulate default rows
@@ -67,8 +68,6 @@ document.addEventListener("DOMContentLoaded", function() {
         { key: 'Authorization', value: 'Bearer token' },
         { key: 'Accept', value: '*/*' }
     ];
-
-    console.log("ENTER");
 
     // Create default headers
     defaultHeaders.forEach(header => createHeaderRow(header.key, header.value));
