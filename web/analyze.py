@@ -15,15 +15,15 @@ def build_tree(data, parent=None):
                 node = Node(key, parent=parent)  #
                 build_tree(value, node)  
     elif isinstance(data, list):  
-        pass  
-
+        if data:
+            build_tree(data[0], parent)
 
 @analyze_bp.route('/analyze', methods=['POST'])
 
 def process_json():
     json_data = request.get_json()  # Get JSON from the request
 
-    root = Node("root")
+    root = Node("root [ ]" if isinstance(json_data, list) else "root")
     
     try:
         if not json_data:
