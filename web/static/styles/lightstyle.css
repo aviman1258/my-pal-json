@@ -365,6 +365,8 @@ input::placeholder {
     display: flex;
     justify-content: start;
     margin-bottom: 10px;
+    align-self: flex-start;
+    width: 100%;
 }
 
 .tab {
