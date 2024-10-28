@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Function to create a new header row
     function createHeaderRow(key = '', value = '') {
-        console.log(key, value);
 
         // Create header key input
         const headerKeyDiv = document.createElement('div');
