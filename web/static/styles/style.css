@@ -366,3 +366,27 @@ input::placeholder {
 .toggle-headers-button:hover img {
     filter: none; /* Ensure no unwanted color inversion */
 }
+
+.tabs-container {
+    display: flex;
+    justify-content: start;
+    margin-bottom: 10px;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #2e2e2e;
+    color: #e0e0e0;
+    border: 1px solid #1f1f1f;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: bold;
+    margin-right: 2px;
+}
+
+.tab.active {
+    background-color: #4caf50;
+    color: #ffffff;
+}

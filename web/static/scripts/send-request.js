@@ -1,4 +1,5 @@
-// web/static/scripts/send-request.js
+let requestData = "";
+let responseData = "";
 
 document.getElementById("sendBtn").addEventListener("click", async () => {
     // Collect data from inputs
@@ -19,6 +20,8 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
                 : valueInput.value;
         }
     });
+
+    requestData = inputJsonElement.value;
 
     // Parse JSON body from inputJson
     let body = null;
@@ -61,6 +64,10 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
 
         // Display formatted JSON in inputJson or show error message
         inputJsonElement.value = JSON.stringify(responseContent, null, 2); // Format JSON response
+        responseData = inputJsonElement.value;
+
+        document.getElementById("requestTab").classList.remove("active");
+        document.getElementById("responseTab").classList.add("active");
     } catch (error) {
         // Display network or other errors in outputBox
         outputBoxElement.value = `Error: Unable to make the API request. ${error.message}`;

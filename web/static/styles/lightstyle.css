@@ -360,3 +360,27 @@ input::placeholder {
 .toggle-headers-button:hover img {
     box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
 }
+
+.tabs-container {
+    display: flex;
+    justify-content: start;
+    margin-bottom: 10px;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #cccccc;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: bold;
+    margin-right: 2px;
+}
+
+.tab.active {
+    background-color: #FF6F00;
+    color: #ffffff;
+}
