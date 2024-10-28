@@ -13,7 +13,10 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
     headersGrid.querySelectorAll(".header-key-input").forEach((keyInput, index) => {
         const valueInput = headersGrid.querySelectorAll(".header-value")[index];
         if (keyInput.value && valueInput.value) {
-            headers[keyInput.value] = valueInput.value;
+            // If the key is "Authorization", add "Bearer " prefix to the value
+            headers[keyInput.value] = keyInput.value === "Authorization" 
+                ? `Bearer ${valueInput.value}`
+                : valueInput.value;
         }
     });
 
