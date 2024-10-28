@@ -1,4 +1,3 @@
-# proxy.py
 from flask import Blueprint, request, jsonify
 import requests
 
