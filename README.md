@@ -1,253 +1,86 @@
-# JSON to C# Class and Tree Structure Generator
+# My Pal JSON
 
-This project provides tools to generate both C# class files and a tree structure representing the hierarchy of a given JSON schema. It includes:
+My Pal JSON is a web-based JSON analyzer that allows users to test APIs, view request and response data, toggle between dark and light themes, and generate code based on JSON input. It supports multiple programming languages and includes dynamic header management and easy request-response toggling.
 
-- A batch file (`run-json2cs.bat`) that generates C# class files and a tree structure from a JSON file selected via a File Explorer dialog.
-- A web-based interface that allows you to input JSON, analyze it, and view the hierarchical tree structure in the browser.
+## Quick Start
 
-## Features
+### Without Downloading the Code
 
-- **Batch File (`run-json2cs.bat`)**:
+1. Set up the buildx builder:
 
-  - Automatically generates C# class files from a JSON schema.
-  - Produces a hierarchical tree structure from the JSON file.
-  - Allows you to select the JSON file through a File Explorer dialog.
-  - Creates an output folder inside `csharp-model` named after the root element in the JSON file or the file name itself.
-  - Organizes the tree structure file `schema-tree.txt` in a `tree` subdirectory within the C# output folder.
-  - Opens the output folder for easy access to both the C# files and the tree structure.
+   ```bash
+   docker buildx create --use
+   ```
 
-- **Web-based JSON Analyzer**:
-  - Provides a user interface for analyzing JSON files.
-  - Displays the JSON tree structure in the browser.
-  - Uses Flask as the backend to process and render the JSON tree structure.
-  - Creates C# classes that model the JSON schema.
-  - Supports Cross-Origin Resource Sharing (CORS) for easy communication between frontend and backend.
+2. Build and push the Docker image:
 
-**Docker Container Enables**:
+   ```bash
+   docker buildx build --platform linux/amd64,linux/arm64 -t achandra1258/my-pal-json:1.3.0 -t achandra1258/my-pal-json:latest --push .
+   ```
 
-- Allows the user tp run a docker container that will give the user access to all capabilities
+3. Pull the latest Docker image:
 
-## Docker
+   ```bash
+   docker pull achandra1258/my-pal-json:latest
+   ```
 
-### Steps
+4. Run the Docker container:
 
-- Go to root folder in terminal.fef9fa0b7d76
-- Spin up contaier:
+   ```bash
+   docker run --name my-pal-json-server-app -d -p 5000:5000 achandra1258/my-pal-json:latest
+   ```
 
-```bash
-docker-compose up -d
-```
+5. Open your browser and go to [localhost:5000](http://localhost:5000) to access My Pal JSON.
 
-- Once the container is up and running, go to `localhost:5000`.
+### With Code Downloaded
 
+1. Clone the repository and navigate to the project directory.
+2. Start the application using Docker Compose:
+   ```bash
+   docker-compose up -d
+   ```
 
-### Pipeline
+## How to Use
 
-1. `docker buildx create --use`
-2. `docker buildx build --platform linux/amd64,linux/arm64 -t achandra1258/my-pal-json:1.3.0 -t achandra1258/my-pal-json:latest --push .`
-3. `docker pull achandra1258/my-pal-json:latest`
-4. `docker run --name my-pal-json-server-app -d -p 5000:5000 achandra1258/my-pal-json:latest`
-5. Go to **localhost:5000** in your browser.
+### Features
 
-## Batch File Usage
+- **API Testing**: Send API requests with custom HTTP methods, headers, and JSON body input.
+- **Response Viewer**: View API responses directly in the response tab.
+- **Request/Response Tabs**: Toggle between "Request" and "Response" views, making it easy to switch and review data.
+- **Dynamic Headers Management**: Add custom headers, including support for `Authorization` tokens.
+- **Code Generation**: Generate code in multiple languages (C#, Python, JavaScript, C++, Java, Go) based on JSON input.
+- **Theme Toggle**: Switch between light and dark themes to match your preference.
 
-### Prerequisites
+### Usage Instructions
 
-- Python 3.x installed on your machine.
-- The following Python libraries are required:
-  - `anytree` for generating and rendering the tree structure.
+1. **API Request Setup**:
 
-Install the required library using pip:
+   - Select your HTTP method (`GET`, `POST`, or `PUT`) from the dropdown.
+   - Enter the API endpoint in the URL input field.
+   - If needed, enter a JSON payload in the input area under the "Request" tab.
 
-```bash
-pip install anytree
-```
+2. **Header Management**:
 
-### Running the Batch File
+   - Add custom headers in the header section. If the header key is `Authorization`, the application will automatically add the `Bearer` prefix if needed.
 
-1. Clone the repository or download the Python scripts and batch file.
-2. Double-click the `run-json2cs.bat` batch fle to run the script.
-3. File explorer will open and you will need to navigate to the json file you want to analyze.
-4. Double click to the json file.
-5. After processing the anaylsis, the folder with the artifacts (C# classes representing the model and the tree folder with the tree of the schema) will open.
+3. **Sending a Request**:
 
-### Example
+   - Click the "Send" button to submit the API request.
+   - Once a response is received, it will display in the "Response" tab, and the tab will switch automatically to show the output.
 
-If the input file is user.json with the following content:
+4. **Tab Switching**:
 
-```json
-{
-  "user": {
-    "name": "John Doe",
-    "age": 30,
-    "email": "johndoe@example.com",
-    "address": {
-      "street": "123 Main St",
-      "city": "New York",
-      "state": "NY",
-      "zip": "10001"
-    },
-    "phoneNumbers": [
-      {
-        "type": "home",
-        "number": "212-555-1234"
-      },
-      {
-        "type": "work",
-        "number": "646-555-5678"
-      }
-    ],
-    "isActive": true,
-    "roles": ["admin", "editor", "user"]
-  }
-}
-```
+   - Switch between "Request" and "Response" tabs to view either your input JSON or the API response JSON.
 
-The script will create a folder named `user` inside the `csharp-model` directory and generate the following C# class files in it.
+5. **Analyze Json Structure**
 
-- `User.cs`
-- `Address.cs`
-- `Phonenumber.cs`
+   - See the json schema structure in s simple tree format.
 
-### `User.cs` Example Output
+6. **Code Generation**:
 
-```csharp
-public class User
-{
-    public string Name { get; set; }
-    public int Age { get; set; }
-    public string Email { get; set; }
-    public Address Address { get; set; }
-    public List<Phonenumber> Phonenumbers { get; set; }
-    public bool Isactive { get; set; }
-    public List<string> Roles { get; set; }
-}
-```
+   - Choose your preferred programming language from the dropdown menu and click "Model" to generate code based on your JSON input.
 
-## Web-Based JSON Analyzer Usage
+7. **Theme Toggle**:
+   - Click the theme toggle button to switch between light and dark modes.
 
-### Prerequisites
-
-- Python 3.x installed on your machine.
-- The following Python libraries are required:
-  - `flask`
-  - `flask-cors`
-  - `anytree`
-
-Install the requited libraries using pip:
-
-```bash
-pip install flask flask-cors anytree
-```
-
-### Running the Flask Server
-
-1. Navigate to the project directory.
-2. Run the Flask server:
-
-```bash
-python json-2-tree-direct.py
-```
-
-The Flask server should now be running on http://127.0.0.1:5000.
-
-### Using the Web Interface
-
-1. The web interface will load automatically once the Flask server starts.
-2. Paste a valid JSON object into the `Input JSON` text box.
-3. Use the following buttons to perform operations:
-
-- _Analyze_: Analyzes the JSON and displays its hierarchical tree structure in the `Output` text box.
-- _Model_: Generates C# classes based on the JSON schema and displays the full class definitions as plain text in the `Output` text box
-
-### Example Worflow
-
-1. Paste the following JSON into the `Input JSON` textbox
-
-```json
-{
-  "user": {
-    "name": "John Doe",
-    "age": 30,
-    "email": "johndoe@example.com",
-    "address": {
-      "street": "123 Main St",
-      "city": "New York",
-      "state": "NY",
-      "zip": "10001"
-    },
-    "phoneNumbers": [
-      {
-        "type": "home",
-        "number": "212-555-1234"
-      },
-      {
-        "type": "work",
-        "number": "646-555-5678"
-      }
-    ],
-    "isActive": true,
-    "roles": ["admin", "editor", "user"]
-  }
-}
-```
-
-2. Click the _Analyze_ button. The hierarchical tree structure of the JSON will be displayed in the Output text box.
-
-3. Click the _Model_ button. The generated C# class definitions will be displayed in the Output text box, similar to the following:
-
-### Example Output
-
-```css
-root
-└── user
-    ├── name
-    ├── age
-    ├── email
-    ├── address
-    │   ├── street
-    │   ├── city
-    │   ├── state
-    │   └── zip
-    ├── phoneNumbers [ ]
-    │   ├── type
-    │   └── number
-    ├── isActive
-    └── roles [ ]
-```
-
-```csharp
-public class User
-{
-    public string Name { get; set; }
-    public int Age { get; set; }
-    public string Email { get; set; }
-    public Address Address { get; set; }
-    public List<Phonenumber> Phonenumbers { get; set; }
-    public bool Isactive { get; set; }
-    public List<string> Roles { get; set; }
-}
-
-public class Address
-{
-    public string Street { get; set; }
-    public string City { get; set; }
-    public string State { get; set; }
-    public string Zip { get; set; }
-}
-
-public class Phonenumber
-{
-    public string Type { get; set; }
-    public string Number { get; set; }
-}
-```
-
-### Notes
-
-- The _Output_ text box displays both the analyzed JSON tree structure and the generated C# class files depending on which button is pressed.
-- The _Model_ button will generate C# class definitions directly in the output without requiring the user to download any files.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+Enjoy analyzing and testing your JSON data with My Pal JSON!
