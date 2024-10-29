@@ -21,6 +21,13 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
         }
     });
 
+    document.getElementById("requestTab").classList.add("active");
+    document.getElementById("responseTab").classList.remove("active");
+
+    if (responseData != "") {
+        inputJsonElement.value = requestData;
+    }
+
     requestData = inputJsonElement.value;
 
     // Parse JSON body from inputJson
@@ -45,25 +52,30 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ apiUrl, httpMethod, headers, body })
-        });
+        });        
 
-        const result = await response.json();
+        if (response.status >= 400) {
+            inputJsonElement.value = "Status Code: " + response.status + ": " + response.statusText;
+        } else {
+            const result = await response.json();
 
-        // Process the response content
-        let responseContent = result.content;
+            // Process the response content
+            let responseContent = result.content;
 
-        // Check if response content is wrapped in quotes (a JSON string)
-        if (typeof responseContent === "string") {
-            try {
-                // Attempt to parse as JSON if it's a string
-                responseContent = JSON.parse(responseContent);
-            } catch (parseError) {
-                // If parsing fails, leave it as is (plain text)
+            // Check if response content is wrapped in quotes (a JSON string)
+            if (typeof responseContent === "string") {
+                try {
+                    // Attempt to parse as JSON if it's a string
+                    responseContent = JSON.parse(responseContent);
+                } catch (parseError) {
+                    // If parsing fails, leave it as is (plain text)
+                }
             }
+
+            // Display formatted JSON in inputJson or show error message
+            inputJsonElement.value = JSON.stringify(responseContent, null, 2); // Format JSON response
         }
 
-        // Display formatted JSON in inputJson or show error message
-        inputJsonElement.value = JSON.stringify(responseContent, null, 2); // Format JSON response
         responseData = inputJsonElement.value;
 
         document.getElementById("requestTab").classList.remove("active");
