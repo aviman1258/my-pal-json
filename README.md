@@ -6,31 +6,19 @@ My Pal JSON is a web-based JSON analyzer that allows users to test APIs, view re
 
 ### Without Downloading the Code
 
-1. Set up the buildx builder:
-
-   ```bash
-   docker buildx create --use
-   ```
-
-2. Build and push the Docker image:
-
-   ```bash
-   docker buildx build --platform linux/amd64,linux/arm64 -t achandra1258/my-pal-json:1.3.0 -t achandra1258/my-pal-json:latest --push .
-   ```
-
-3. Pull the latest Docker image:
+1. Pull the latest Docker image:
 
    ```bash
    docker pull achandra1258/my-pal-json:latest
    ```
 
-4. Run the Docker container:
+2. Run the Docker container:
 
    ```bash
    docker run --name my-pal-json-server-app -d -p 5000:5000 achandra1258/my-pal-json:latest
    ```
 
-5. Open your browser and go to [localhost:5000](http://localhost:5000) to access My Pal JSON.
+3. Open your browser and go to [localhost:5000](http://localhost:5000) to access My Pal JSON.
 
 ### With Code Downloaded
 
