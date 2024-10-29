@@ -11,9 +11,39 @@
     <header>
         <h1>My Pal JSON</h1>
     </header>
+
+    <!-- API Request Bar -->
+    <div class="api-request-bar">
+        <select id="httpMethod" class="http-method-select">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+        </select>
+        <input type="text" id="apiUrl" placeholder="Enter API Endpoint" class="api-url-input">
+        <button id="sendBtn" class="send-button">Send</button>
+    </div>
+
+    <button id="toggleHeadersBtn" class="toggle-headers-button">
+        <img id="toggleIcon" src="{{ url_for('static', filename='images/eye-slash.svg') }}" 
+        data-eye="{{ url_for('static', filename='images/eye.svg') }}"
+        data-eye-slash="{{ url_for('static', filename='images/eye-slash.svg') }}"
+        alt="Toggle Headers">
+    </button>
+
+    <!-- Headers Grid Section -->
+    <div class="headers-section">
+        <div class="headers-grid" id="headersGrid">
+            <!-- Dynamic rows for header key-value pairs will be added here by JavaScript -->
+        </div>
+    </div>
+
     <div class="container">
         <div class="left">
-            <textarea id="inputJson" placeholder="Input JSON here"></textarea>
+            <div class="tabs-container">
+                <button id="requestTab" class="tab active">Request</button>
+                <button id="responseTab" class="tab">Response</button>
+            </div>
+            <textarea id="inputJson" placeholder="Input JSON body here"></textarea>
         </div>
         <div class="middle">
             <button id="analyzeBtn">Analyze</button>
@@ -37,7 +67,7 @@
                 <img id="themeIcon" src="{{ url_for('static', filename='images/sun.svg') }}" alt="Toggle Theme">
             </button>
             <div class="output-container">
-                <textarea id="outputBox" placeholder="Output will be displayed here" readonly></textarea>
+                <textarea id="outputBox" placeholder="Analyzed output will be displayed here" readonly></textarea>
                 <button id="copyBtn" class="copy-button">
                     <img src="{{ url_for('static', filename='images/copy.svg') }}" alt="Copy" class="copy-icon">
                 </button>
@@ -49,5 +79,9 @@
     <script src="{{ url_for('static', filename='scripts/model-json.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/theme-toggle.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/copy-output.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/headers-management.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/headers-toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/send-request.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/tab-switch.js') }}"></script>
 </body>
 </html>

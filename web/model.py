@@ -23,16 +23,19 @@ def generate_classes():
         root_key = list(json_data.keys())[0]
         root_data = json_data[root_key]
         base_class_name = root_key.capitalize()
-    else:
+    elif isinstance(json_data, dict) and len(json_data) > 1:
         base_class_name = 'Root'
         root_data = json_data
+    elif isinstance(json_data, list) and json_data:
+        root_data = json_data[0]
+        base_class_name = 'Root'
 
     # Generate the base class and nested classes  from 
     
     if language == 'csharp':
         class_files[f"{base_class_name}.cs"] = generate_csharp(base_class_name, root_data, class_files)
     elif language == 'python':
-        class_files[f"{base_class_name}.py"] = generate_python(json_data, base_class_name, 0)
+        class_files[f"{base_class_name}.py"] = generate_python(root_data, base_class_name, 0)
     elif language == 'javascript':
         class_files[f"{base_class_name}.js"] = generate_javascript(base_class_name, root_data)
     elif language == 'cplusplus':

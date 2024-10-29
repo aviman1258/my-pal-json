@@ -9,7 +9,7 @@ body, html {
     font-family: 'Roboto', sans-serif;
     display: flex;
     flex-direction: column;
-    background-color: #121212; /* Dark background for dark mode */
+    background-color: #121212;
     color: #e0e0e0;
 }
 
@@ -17,7 +17,7 @@ header {
     width: 100%;
     text-align: center;
     padding: 20px 0;
-    background-color: #1f1f1f; /* Slightly lighter gray for the header */
+    background-color: #1f1f1f;
     color: #e0e0e0;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.7);
 }
@@ -26,7 +26,7 @@ h1 {
     margin: 0;
     font-size: 2rem;
     font-weight: 500;
-    color: #ffffff; /* Bright white text for clarity */
+    color: #ffffff;
 }
 
 .container {
@@ -35,8 +35,9 @@ h1 {
     flex-grow: 1;
     height: 100%;
     width: 100%;
-    padding: 20px; /* Add padding around the entire container */
-    box-sizing: border-box; /* Ensures padding is inside the total width/height */
+    padding: 5px;
+    box-sizing: border-box;
+    margin-top: 5px;
 }
 
 .left, .right {
@@ -44,8 +45,9 @@ h1 {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 20px; /* Add padding to the right section */
-    box-sizing: border-box; /* Ensures the padding is included inside the width */
+    padding: 5px;
+    box-sizing: border-box;
+    margin-top: 5px;
 }
 
 .left textarea, .right textarea {
@@ -54,18 +56,17 @@ h1 {
     resize: none;
     font-size: 1rem;
     background-color: #2e2e2e;
-    color: #e0e0e0; /* Darker text for readability */
+    color: #e0e0e0;
     border: none;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
     padding: 20px;
     transition: all 0.3s ease;
-    margin: 10px;
-    box-sizing: border-box; /* Ensure padding fits within total dimensions */
+    box-sizing: border-box;
 }
 
 .left textarea:hover, .right textarea:hover {
-    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7); /* Green glow effect */
+    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7);
     outline: none;
 }
 
@@ -80,12 +81,12 @@ h1 {
 .middle button {
     font-size: 1.1rem;
     padding: 10px 20px;
-    margin: 1px 0; /* Space between the buttons */
-    width: 150px;  /* Fixed width for both buttons */
-    height: 50px;  /* Fixed height for both buttons */
-    background-color: #4caf50;  /* Green background color */
-    color: white; /* White text on button */
-    border-radius: 30px; /* Rounded buttons */
+    margin: 1px 0;
+    width: 150px;
+    height: 50px;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 30px;
     border: none;
     cursor: pointer;
     text-align: center;
@@ -94,36 +95,36 @@ h1 {
 }
 
 .middle button:hover {
-    background-color: #43a047;  /* Darker green on hover */
+    background-color: #43a047;
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.7);
-    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7); /* Green glow effect */
+    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7);
 }
 
 #themeToggleBtn {
     position: absolute;
-    top: 20px; /* Adjust to a reasonable position inside the header */
-    right: 20px; /* Space it away from the edge of the page */
+    top: 20px;
+    right: 20px;
     background: none;
     border: none;
     cursor: pointer;
     transition: box-shadow 0.3s ease;
-    width: 35px;  /* Set width for round shape */
-    height: 35px; /* Set height for round shape */
-    border-radius: 50%; /* This makes the button round */
-    padding: 5px; /* Add padding for a nicer look */
-    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.089); /* Optional shadow for depth */
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.089);
 }
 
 #themeToggleBtn img {
-    width: 100%;  /* Make the image fill the button */
+    width: 100%; 
     height: 100%;
-    border-radius: 50%;  /* Make the image round */
-    filter: invert(100%); /* For dark theme, invert image colors */
+    border-radius: 50%;
+    filter: invert(100%);
 }
 
 #themeToggleBtn:hover {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.7);
-    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7); /* Green glow effect */
+    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7);
 }
 
 .language-select {
@@ -131,8 +132,8 @@ h1 {
     width: 150px;
     height: 40px;
     font-size: 1rem;
-    background-color: #2e2e2e; /* Dark background */
-    color: #e0e0e0;            /* Light text */
+    background-color: #2e2e2e;
+    color: #e0e0e0;
     border: none;
     border-radius: 30px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
@@ -177,6 +178,7 @@ h1 {
     border: none;
     cursor: pointer;
     padding: 0;
+    margin: 0;
     width: 24px;
     height: 24px;
     display: flex;
@@ -205,4 +207,188 @@ h1 {
 .copy-button.flash-error {
     background-color: #f44336;  /* Red for error */
     box-shadow: 0 0 10px 2px rgba(244, 67, 54, 0.7);  /* Red glow */
+}
+
+/* API Request Bar */
+.api-request-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 40px);
+    padding: 10px;
+    background-color: #1f1f1f; /* Dark background for the request bar (adjust for light theme) */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px; /* Space between the header and the rest of the content */
+    margin: 20px auto; /* Center the bar horizontally and add a gap at the top and bottom */
+    border-radius: 8px; /* Optional: Add rounded corners to match modern UI styles */
+}
+
+/* HTTP Method Dropdown */
+.http-method-select {
+    width: 80px;
+    height: 40px;
+    background-color: #2e2e2e;
+    color: #e0e0e0;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.http-method-select:hover {
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+
+/* API URL Input */
+.api-url-input {
+    flex-grow: 1;
+    height: 40px;
+    background-color: #2e2e2e;
+    color: #e0e0e0;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 0 10px;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.3s ease;
+}
+
+.api-url-input:focus {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+
+.api-url-input:hover {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+
+/* Send Button */
+.send-button {
+    width: 100px;
+    height: 40px;
+    background-color: #4caf50; /* Green background color for send button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.send-button:hover {
+    background-color: #43a047; /* Darker green on hover */
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+
+/* Headers Section */
+.headers-section {
+    width: calc(100% - 40px); /* Ensure it aligns with the API request bar */
+    margin: 5px auto; /* Add spacing around the section */
+    background-color: #1f1f1f; /* Dark background for dark mode */
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.7); /* Darker shadow for dark mode */
+    font-size: 0.9rem; /* Smaller font size for all text in headers section */
+}
+
+/* Header grid */
+.headers-grid {
+    display: grid;
+    grid-template-columns: 1fr 4fr; /* Make the value column (right) wider than key column */
+    column-gap: 20px;
+    row-gap: 5px;
+    align-items: center; /* Center vertically */
+    padding-right: 15px;
+}
+
+.header-value, .header-key-input {
+    width: 100%;
+    height: 25px;
+    padding: 8px;
+    font-size: 1rem;
+    background-color: #2e2e2e; /* Dark background for input */
+    color: #e0e0e0; /* Light text for readability */
+    border: 1px solid #444444; /* Darker border */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Stronger shadow for dark mode */
+    transition: box-shadow 0.3s ease;
+}
+
+.header-value:focus, .header-key-input:focus {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect for dark mode */
+}
+
+.header-value:hover, .header-key-input:hover {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect for dark mode */
+}
+
+input::placeholder {
+    font-style: italic;
+    color: #888; /* Optional: change color for better visibility */
+}
+
+.toggle-headers-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0px;
+    margin-left: 25px;
+    margin-bottom: 0px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Optional: adjust shadow */
+    transition: box-shadow 0.3s ease;
+    align-self: start; /* Align button to the start of its container */
+}
+
+.toggle-headers-button img {
+    width: 15px;
+    height: 15px;
+    filter: invert(100%);
+}
+
+.toggle-headers-button:hover img {
+    background-color: rgba(40, 167, 69, 0.2); /* Soft green background */
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+
+.toggle-headers-button:hover img {
+    filter: none; /* Ensure no unwanted color inversion */
+}
+
+.tabs-container {
+    display: flex;
+    justify-content: start;
+    margin-bottom: 10px;
+    align-self: flex-start;
+    width: 100%;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #2e2e2e;
+    color: #e0e0e0;
+    border: 1px solid #1f1f1f;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: bold;
+    margin-right: 2px;
+}
+
+.tab.active {
+    background-color: #4caf50;
+    color: #ffffff;
 }
