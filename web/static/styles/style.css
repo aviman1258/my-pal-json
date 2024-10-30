@@ -291,7 +291,7 @@ h1 {
 /* Headers Section */
 .headers-section {
     width: calc(100% - 40px); /* Ensure it aligns with the API request bar */
-    margin: 5px auto; /* Add spacing around the section */
+    margin: 0px auto; /* Add spacing around the section */
     background-color: #1f1f1f; /* Dark background for dark mode */
     padding: 5px;
     border-radius: 8px;
@@ -422,4 +422,19 @@ input::placeholder {
     padding: 5px;
     color: #e0e0e0;
 }
+
+/* Style for IsAuth label */
+.is-auth-label {
+    font-size: 0.8rem;
+    color: #e0e0e0; /* Adjust color for each theme */
+    text-align: left;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+/* Light theme adjustment (in lightstyle.css) */
+.is-auth-label {
+    color: #e0e0e0;
+}
+
 
