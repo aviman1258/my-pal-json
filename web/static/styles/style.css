@@ -437,4 +437,7 @@ input::placeholder {
     color: #e0e0e0;
 }
 
-
+#inputJson.highlight {
+    border: 2px dashed #4caf50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
