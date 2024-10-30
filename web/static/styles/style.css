@@ -302,7 +302,7 @@ h1 {
 /* Header grid */
 .headers-grid {
     display: grid;
-    grid-template-columns: 1fr 4fr; /* Make the value column (right) wider than key column */
+    grid-template-columns: 32px 2fr 4fr;
     column-gap: 20px;
     row-gap: 5px;
     align-items: center; /* Center vertically */
@@ -401,3 +401,25 @@ input::placeholder {
 .tab:hover{
     box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7); /* Green glow effect */
 }
+
+/* Styling for the auth-checkbox */
+.auth-checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+}
+
+.auth-checkbox:hover {
+    box-shadow: 0 0 10px 2px rgba(40, 167, 69, 0.7);
+}
+
+
+/* Header label styling */
+.header-label {
+    font-weight: bold;
+    padding: 5px;
+    color: #e0e0e0;
+}
+

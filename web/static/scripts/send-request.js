@@ -13,9 +13,9 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
     const headers = {};
     headersGrid.querySelectorAll(".header-key-input").forEach((keyInput, index) => {
         const valueInput = headersGrid.querySelectorAll(".header-value")[index];
+        const authCheckbox = headersGrid.querySelectorAll(".auth-checkbox")[index];
         if (keyInput.value && valueInput.value) {
-            // If the key is "Authorization", add "Bearer " prefix to the value
-            headers[keyInput.value] = keyInput.value === "Authorization" 
+            headers[keyInput.value] = authCheckbox.checked
                 ? `Bearer ${valueInput.value}`
                 : valueInput.value;
         }
