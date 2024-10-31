@@ -49,6 +49,7 @@
             <textarea id="inputJson" placeholder="Input JSON body here"></textarea>
         </div>
         <div class="middle">
+            <button id="prettyBtn">Pretty</button>
             <button id="analyzeBtn">Analyze</button>
             <button id="modelBtn">Model</button>
 
@@ -87,5 +88,6 @@
     <script src="{{ url_for('static', filename='scripts/send-request.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/tab-switch.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/input-drop.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/make-pretty.js') }}"></script>
 </body>
 </html>
