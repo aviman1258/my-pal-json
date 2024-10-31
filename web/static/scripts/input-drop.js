@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
             };
             reader.readAsText(file);
         } else {
-            alert("Please drop a valid text or JSON file.");
+            inputJson.value="Please drop a valid text or JSON file.";
             unhighlight(); // Ensure highlight is removed if the file type is invalid
         }
     }
