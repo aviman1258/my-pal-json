@@ -1,3 +1,5 @@
+import { requestData } from './send-request.js';
+
 // Assuming your save button has an id of "saveBtn"
 document.getElementById("saveBtn").addEventListener("click", () => {
     // Retrieve values from your input fields
@@ -11,26 +13,6 @@ document.getElementById("saveBtn").addEventListener("click", () => {
     // Call the saveApiCall function with the necessary arguments
     saveApiCall(apiUrl, method, headers, body);
 });
-
-// Function to open/create the IndexedDB database
-const openDatabase = () => {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open("MyPalJsonDB", 1);
-
-        request.onupgradeneeded = function(event) {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains("apiCalls")) {
-                const apiCallsStore = db.createObjectStore("apiCalls", { keyPath: "id", autoIncrement: true });
-                apiCallsStore.createIndex("apiUrl", "apiUrl", { unique: false });
-                apiCallsStore.createIndex("method", "method", { unique: false });
-                apiCallsStore.createIndex("timestamp", "timestamp", { unique: false });
-            }
-        };
-
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-};
 
 // Function to filter out auth headers
 const filterAuthHeaders = (headers) => {
@@ -87,7 +69,7 @@ const saveApiCall = async (apiUrl, method, headers, body) => {
     const transaction = db.transaction("apiCalls", "readwrite");
     const store = transaction.objectStore("apiCalls");
 
-    const apiCall = { apiUrl, method, headers, body, timestamp: Date.now() };
+    const apiCall = { apiUrl, method, headers, body: requestData, timestamp: Date.now() };
     store.add(apiCall);
 
     transaction.oncomplete = () => {

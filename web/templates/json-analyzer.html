@@ -88,16 +88,29 @@
         </div>
     </div>
 
+    <!-- Modal for API Call History -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <h2>API Call History</h2>
+            <div id="historyList" class="history-list">
+                <!-- JavaScript will populate this area with API call history -->
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='scripts/validate-json.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/model-json.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/theme-toggle.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/copy-output.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/headers-management.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/headers-toggle.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/send-request.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/send-request.js') }}" type="module"></script>
     <script src="{{ url_for('static', filename='scripts/tab-switch.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/input-drop.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/make-pretty.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/save-call.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/open-database.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/save-call.js') }}" type="module"></script>
+    <script src="{{ url_for('static', filename='scripts/history-modal.js') }}"></script>
 </body>
 </html>

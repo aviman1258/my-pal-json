@@ -85,3 +85,6 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
         outputBoxElement.value = `Error: Unable to make the API request. ${error.message}`;
     }
 });
+
+export { requestData };
+

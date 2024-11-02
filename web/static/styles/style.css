@@ -474,4 +474,84 @@ input::placeholder {
     box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7); /* Green glow effect */
 }
 
+/* Modal overlay */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Darker overlay */
+}
 
+/* Modal content box */
+.modal-content {
+    background-color: #2e2e2e;
+    color: #e0e0e0;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.7);
+}
+
+/* Close button */
+.close {
+    color: #e0e0e0;
+    float: right;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover, .close:focus {
+    color: #333;
+}
+
+/* History list styling */
+.history-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+    border-radius: 8px;
+    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.history-list ul {
+    padding-left: 20px; /* Indent the list for readability */
+    margin: 5px 0; /* Match <p> element margins */
+    list-style-type: none; /* Remove bullet points */
+}
+
+.history-list li {
+    font-size: 0.9rem;
+    color: #666; /* Match <p> text color */
+    margin-bottom: 5px; /* Space between list items */
+}
+
+/* Each API call item */
+.history-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #444;
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+}
+
+.history-item h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #e0e0e0;
+}
+
+.history-item p, .history-list ul, .history-list li {
+    margin: 5px 0 0;
+    font-size: 0.9rem;
+    color: #666; /* Color matches <p> elements in history items */
+}
