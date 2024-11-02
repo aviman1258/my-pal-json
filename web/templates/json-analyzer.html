@@ -13,6 +13,10 @@
         <h1>My Pal JSON</h1>
     </header>
 
+    <button id="saveBtn" class="save-button">
+        <img id="saveIcon" src="{{ url_for('static', filename='images/save.svg') }}" alt="Save">
+    </button>   
+
     <!-- API Request Bar -->
     <div class="api-request-bar">
         <select id="httpMethod" class="http-method-select">
@@ -46,7 +50,7 @@
                 <button id="requestTab" class="tab active">Request</button>
                 <button id="responseTab" class="tab">Response</button>
             </div>
-            <textarea id="inputJson" placeholder="Input JSON body here"></textarea>
+            <textarea id="inputJson" placeholder="Drag and drop or type JSON body here"></textarea>
         </div>
         <div class="middle">
             <button id="prettyBtn">Pretty</button>

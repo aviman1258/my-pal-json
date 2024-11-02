@@ -441,3 +441,29 @@ input::placeholder {
     border: 2px dashed #4caf50;
     background-color: rgba(76, 175, 80, 0.1);
 }
+
+#saveBtn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.089);
+    transition: box-shadow 0.3s ease;
+}
+
+#saveBtn img {
+    width: 100%;
+    height: 100%;
+    filter: invert(100%);
+}
+
+#saveBtn:hover {
+    box-shadow: 0 0 20px 5px rgba(40, 167, 69, 0.7); /* Green glow effect */
+}
+

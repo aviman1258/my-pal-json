@@ -435,3 +435,29 @@ input::placeholder {
     background-color: rgba(255, 152, 0, 0.3);
 }
 
+#saveBtn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+#saveBtn img {
+    width: 100%;
+    height: 100%;
+    filter: invert(0%);
+}
+
+#saveBtn:hover {
+    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
+}
+
+
