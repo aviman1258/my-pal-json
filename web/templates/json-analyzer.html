@@ -13,9 +13,13 @@
         <h1>My Pal JSON</h1>
     </header>
 
-    <button id="saveBtn" class="save-button">
+    <button id="saveBtn" class="save-button" title="Save API Call">
         <img id="saveIcon" src="{{ url_for('static', filename='images/save.svg') }}" alt="Save">
-    </button>   
+    </button>
+    
+    <button id="historyBtn" class="history-button" title="History">
+        <img id="historyIcon" src="{{ url_for('static', filename='images/history.svg') }}" alt="History">
+    </button>
 
     <!-- API Request Bar -->
     <div class="api-request-bar">
@@ -28,7 +32,7 @@
         <button id="sendBtn" class="send-button">Send</button>
     </div>
 
-    <button id="toggleHeadersBtn" class="toggle-headers-button">
+    <button id="toggleHeadersBtn" class="toggle-headers-button" title="Toggle Headers">
         <img id="toggleIcon" src="{{ url_for('static', filename='images/eye-slash.svg') }}" 
         data-eye="{{ url_for('static', filename='images/eye.svg') }}"
         data-eye-slash="{{ url_for('static', filename='images/eye-slash.svg') }}"
@@ -71,12 +75,13 @@
                     data-lightstyle-url="{{ url_for('static', filename='styles/lightstyle.css') }}"
                     data-darkstyle-url="{{ url_for('static', filename='styles/style.css') }}"
                     data-sun-icon="{{ url_for('static', filename='images/sun.svg') }}"
-                    data-moon-icon="{{ url_for('static', filename='images/moon.svg') }}">
+                    data-moon-icon="{{ url_for('static', filename='images/moon.svg') }}"
+                    title="Toggle Theme">
                 <img id="themeIcon" src="{{ url_for('static', filename='images/sun.svg') }}" alt="Toggle Theme">
             </button>
             <div class="output-container">
                 <textarea id="outputBox" placeholder="Analyzed output will be displayed here" readonly></textarea>
-                <button id="copyBtn" class="copy-button">
+                <button id="copyBtn" class="copy-button" title="Copy">
                     <img src="{{ url_for('static', filename='images/copy.svg') }}" alt="Copy" class="copy-icon">
                 </button>
             </div>
@@ -93,5 +98,6 @@
     <script src="{{ url_for('static', filename='scripts/tab-switch.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/input-drop.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/make-pretty.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/save-call.js') }}"></script>
 </body>
 </html>
