@@ -51,12 +51,19 @@ const loadApiCallHistory = (db) => {
             });
             headersHtml += `</ul>`;
 
+            // Add delete button to each item
+            const deleteButton = document.createElement("button");
+            deleteButton.classList.add("delete-button");
+            deleteButton.innerHTML = `<img src="/static/images/delete.svg" alt="Delete" class="delete-icon">`;
+            deleteButton.dataset.id = apiCall.id; // Store the record ID for deletion
+
             item.innerHTML = `
                 <h3>${apiCall.method} ${apiCall.apiUrl}</h3>
                 <p>Headers:</p>
                 ${headersHtml}
                 <p>Body: ${apiCall.body || "None"}</p>
             `;
+            item.appendChild(deleteButton); // Add delete button to the item
 
             historyList.appendChild(item);
         });

@@ -1,4 +1,4 @@
-import { requestData } from './send-request.js';
+import { dataStore } from './send-request.js';
 
 // Assuming your save button has an id of "saveBtn"
 document.getElementById("saveBtn").addEventListener("click", () => {
@@ -31,11 +31,12 @@ const isDuplicateCall = async (db, apiUrl, method, headers, body) => {
             const cursor = event.target.result;
             if (cursor) {
                 const record = cursor.value;
+                const recordFilteredHeaders = filterAuthHeaders(record.headers);
                 if (
-                    record.apiUrl === apiUrl &&
-                    record.method === method &&
-                    JSON.stringify(filterAuthHeaders(record.headers)) === JSON.stringify(filteredHeaders) &&
-                    JSON.stringify(record.body) === JSON.stringify(body)
+                    record.apiUrl.trim() == apiUrl.trim() &&
+                    record.method.trim() == method.trim() &&
+                    JSON.stringify(recordFilteredHeaders).trim() == JSON.stringify(filteredHeaders).trim() &&
+                    JSON.stringify(record.body).trim() == JSON.stringify(body).trim()
                 ) {
                     resolve(true); // Duplicate found
                     return;
@@ -69,7 +70,7 @@ const saveApiCall = async (apiUrl, method, headers, body) => {
     const transaction = db.transaction("apiCalls", "readwrite");
     const store = transaction.objectStore("apiCalls");
 
-    const apiCall = { apiUrl, method, headers, body: requestData, timestamp: Date.now() };
+    const apiCall = { apiUrl, method, headers, body: dataStore.requestData, timestamp: Date.now() };
     store.add(apiCall);
 
     transaction.oncomplete = () => {

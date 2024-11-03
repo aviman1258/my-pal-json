@@ -97,6 +97,13 @@
                 <!-- JavaScript will populate this area with API call history -->
             </div>
         </div>
+
+        <!-- Delete Confirmation Dialog -->
+        <div id="deleteConfirmDialog" class="confirm-dialog" style="display: none;">
+            <p>Are you sure you want to delete this record?</p>
+            <button id="confirmDeleteBtn">Yes</button>
+            <button id="cancelDeleteBtn">No</button>
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='scripts/validate-json.js') }}"></script>
@@ -106,11 +113,12 @@
     <script src="{{ url_for('static', filename='scripts/headers-management.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/headers-toggle.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/send-request.js') }}" type="module"></script>
-    <script src="{{ url_for('static', filename='scripts/tab-switch.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/tab-switch.js') }}" type="module"></script>
     <script src="{{ url_for('static', filename='scripts/input-drop.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/make-pretty.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/open-database.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/save-call.js') }}" type="module"></script>
     <script src="{{ url_for('static', filename='scripts/history-modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/delete-record.js') }}"></script>
 </body>
 </html>

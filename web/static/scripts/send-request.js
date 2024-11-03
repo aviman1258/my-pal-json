@@ -1,5 +1,7 @@
-let requestData = "";
-let responseData = "";
+export const dataStore = {
+    requestData: "",
+    responseData: ""
+}
 
 document.getElementById("sendBtn").addEventListener("click", async () => {
     // Collect data from inputs
@@ -24,11 +26,11 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
     document.getElementById("requestTab").classList.add("active");
     document.getElementById("responseTab").classList.remove("active");
 
-    if (responseData != "") {
-        inputJsonElement.value = requestData;
+    if (dataStore.responseData != "") {
+        inputJsonElement.value = dataStore.requestData;
     }
 
-    requestData = inputJsonElement.value;
+    dataStore.requestData = inputJsonElement.value;
 
     // Parse JSON body from inputJson
     let body = null;
@@ -76,7 +78,7 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
             inputJsonElement.value = JSON.stringify(responseContent, null, 2); // Format JSON response
         }
 
-        responseData = inputJsonElement.value;
+        dataStore.responseData = inputJsonElement.value;
 
         document.getElementById("requestTab").classList.remove("active");
         document.getElementById("responseTab").classList.add("active");
@@ -85,6 +87,4 @@ document.getElementById("sendBtn").addEventListener("click", async () => {
         outputBoxElement.value = `Error: Unable to make the API request. ${error.message}`;
     }
 });
-
-export { requestData };
 

@@ -530,6 +530,7 @@ input::placeholder {
 
 /* Each API call item */
 .history-item {
+    position: relative;
     padding: 10px;
     margin-bottom: 10px;
     border-bottom: 1px solid #ddd;
@@ -548,3 +549,77 @@ input::placeholder {
     font-size: 0.9rem;
     color: #666; /* Color matches <p> elements in history items */
 }
+
+.delete-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.delete-icon {
+    width: 16px;
+    height: 16px;
+    filter: invert(0%); /* For light theme */
+}
+
+.delete-button:hover .delete-icon {
+    filter: invert(25%);
+}
+
+.delete-button:hover {
+    background-color: rgba(230, 57, 53, 0.3); /* Soft red background */
+    box-shadow: 0 0 8px 4px rgba(230, 57, 53, 0.5); /* Red glow effect */
+}
+
+.confirm-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f9f9f9;
+    color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1001; /* Ensure it appears above other content */
+    text-align: center;
+}
+
+.confirm-dialog p {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.confirm-dialog button {
+    margin: 10px;
+    padding: 5px 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+#confirmDeleteBtn {
+    background-color: #e53935; /* Red button for delete */
+    color: #fff;
+}
+
+#confirmDeleteBtn:hover {
+    background-color: #c62828; /* Darker red on hover */
+}
+
+#cancelDeleteBtn {
+    background-color: #bbb; /* Light gray button for cancel */
+    color: #333;
+}
+
+#cancelDeleteBtn:hover {
+    background-color: #999; /* Darker gray on hover */
+}
+
