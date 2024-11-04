@@ -1,3 +1,5 @@
+import { createHeaderRow } from './headers-management.js';
+
 // Get references to the modal and close button
 const historyModal = document.getElementById("historyModal");
 const closeModal = document.getElementById("closeModal");
@@ -21,6 +23,28 @@ window.onclick = function(event) {
         historyModal.style.display = "none";
     }
 };
+
+function loadApiCallIntoForm(apiCall) {
+    // Set the API URL
+    document.getElementById("apiUrl").value = apiCall.apiUrl;
+
+    // Set the HTTP method
+    document.getElementById("httpMethod").value = apiCall.method;
+
+    // Set the request body (if any)
+    document.getElementById("inputJson").value = JSON.stringify(apiCall.body, null, 2); // Pretty format
+
+    // Clear existing headers
+    const headersGrid = document.getElementById("headersGrid");
+    headersGrid.innerHTML = "";
+
+    // Populate headers
+    apiCall.headers.forEach(header => {
+        createHeaderRow(header.name, header.value, header.isAuth);
+    });
+
+    createHeaderRow();
+}
 
 // Function to load API call history from IndexedDB
 const loadApiCallHistory = (db) => {
@@ -56,6 +80,19 @@ const loadApiCallHistory = (db) => {
             deleteButton.classList.add("delete-button");
             deleteButton.innerHTML = `<img src="/static/images/delete.svg" alt="Delete" class="delete-icon">`;
             deleteButton.dataset.id = apiCall.id; // Store the record ID for deletion
+            deleteButton.title = "Delete";
+
+             // Create load button with load.svg image
+            const loadButton = document.createElement("button");
+            loadButton.classList.add("load-button");
+            loadButton.innerHTML = `<img src="/static/images/load.svg" alt="Load" class="load-icon">`;
+            loadButton.title = "Load";
+
+            // Load the API call data into My Pal JSON on click
+            loadButton.addEventListener("click", () => {
+                loadApiCallIntoForm(apiCall);
+                historyModal.style.display = "none"; // Close the history modal
+            });
 
             item.innerHTML = `
                 <h3>${apiCall.method} ${apiCall.apiUrl}</h3>
@@ -64,7 +101,7 @@ const loadApiCallHistory = (db) => {
                 <p>Body: ${apiCall.body || "None"}</p>
             `;
             item.appendChild(deleteButton); // Add delete button to the item
-
+            item.appendChild(loadButton);
             historyList.appendChild(item);
         });
     };
@@ -73,4 +110,5 @@ const loadApiCallHistory = (db) => {
         historyList.innerHTML = "<p>Error loading API call history.</p>";
     };
 };
+
 

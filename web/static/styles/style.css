@@ -557,29 +557,43 @@ input::placeholder {
     color: #666; /* Color matches <p> elements in history items */
 }
 
-.delete-button {
+.delete-button, .load-button {
     position: absolute;
     top: 10px;
-    right: 10px;
     background: none;
     border: none;
     padding: 0;
     cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.delete-icon {
+.delete-button {
+    right: 40px;
+}
+
+.load-button {
+    right: 10px;
+}
+
+.delete-icon, .load-icon {
     width: 16px;
     height: 16px;
     filter: invert(100%); /* For dark theme */
 }
 
-.delete-button:hover .delete-icon {
+.delete-button:hover .delete-icon,  .load-button:hover .load-icon{
     filter: invert(75%);
 }
 
 .delete-button:hover {
     background-color: rgba(244, 67, 54, 0.3); /* Soft red background */
     box-shadow: 0 0 8px 4px rgba(244, 67, 54, 0.5); /* Red glow effect */
+}
+
+.load-button:hover {
+    background-color: rgba(33, 150, 243, 0.3); /* Blue for load button */
+    box-shadow: 0 0 8px 4px rgba(33, 150, 243, 0.5); /* Blue glow effect */
 }
 
 .confirm-dialog {
