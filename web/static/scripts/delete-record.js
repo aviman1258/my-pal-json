@@ -1,3 +1,5 @@
+import { loadApiCallHistory } from './history-modal.js';
+
 document.addEventListener("DOMContentLoaded", () => {
     const historyList = document.getElementById("historyList");
     const deleteConfirmDialog = document.getElementById("deleteConfirmDialog");

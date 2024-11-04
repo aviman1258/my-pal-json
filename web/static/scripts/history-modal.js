@@ -1,4 +1,5 @@
 import { createHeaderRow } from './headers-management.js';
+import { dataStore } from './send-request.js';
 
 // Get references to the modal and close button
 const historyModal = document.getElementById("historyModal");
@@ -31,8 +32,20 @@ function loadApiCallIntoForm(apiCall) {
     // Set the HTTP method
     document.getElementById("httpMethod").value = apiCall.method;
 
-    // Set the request body (if any)
-    document.getElementById("inputJson").value = JSON.stringify(apiCall.body, null, 2); // Pretty format
+    document.getElementById("responseTab").classList.remove("active");
+    document.getElementById("requestTab").classList.add("active");
+
+     // Parse and set the request body (if any)
+    try {
+        const parsedBody = JSON.parse(apiCall.body);  // Parse if it's a JSON string
+        document.getElementById("inputJson").value = JSON.stringify(parsedBody, null, 2); // Pretty format
+    } catch (error) {
+        // If parsing fails, fallback to raw body
+        document.getElementById("inputJson").value = apiCall.body || "";
+    }
+
+    dataStore.requestData = document.getElementById("inputJson").value;
+    dataStore.responseData = "";
 
     // Clear existing headers
     const headersGrid = document.getElementById("headersGrid");
@@ -47,7 +60,7 @@ function loadApiCallIntoForm(apiCall) {
 }
 
 // Function to load API call history from IndexedDB
-const loadApiCallHistory = (db) => {
+export const loadApiCallHistory = (db) => {
     historyList.innerHTML = ""; // Clear previous content
 
     const transaction = db.transaction("apiCalls", "readonly");
