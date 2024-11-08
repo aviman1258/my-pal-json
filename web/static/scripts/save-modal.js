@@ -30,3 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Handle cancel button
     cancelSaveBtn.addEventListener("click", closeSaveModal);
 });
+
+document.getElementById("closeSaveModal").onclick = function() {
+    document.getElementById("saveNameModal").style.display = "none";
+};

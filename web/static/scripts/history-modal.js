@@ -108,7 +108,8 @@ export const loadApiCallHistory = (db) => {
             });
 
             item.innerHTML = `
-                <h3>${apiCall.method} ${apiCall.apiUrl}</h3>
+                <h3>${apiCall.name || "Unnamed API Call"}</h3>
+                <p>${apiCall.method} ${apiCall.apiUrl}<p>
                 <p>Headers:</p>
                 ${headersHtml}
                 <p>Body: ${apiCall.body || "None"}</p>

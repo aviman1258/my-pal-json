@@ -33,35 +33,9 @@ const getNextDefaultName = async () => {
     });
 };
 
-// Check for existing duplicate API call
-const isDuplicateCall = async (db, apiUrl, method, headers, body) => {
-    const filteredHeaders = filterAuthHeaders(headers);
-    const transaction = db.transaction("apiCalls", "readonly");
-    const store = transaction.objectStore("apiCalls");
-
-    return new Promise((resolve) => {
-        const request = store.openCursor();
-        request.onsuccess = (event) => {
-            const cursor = event.target.result;
-            if (cursor) {
-                const record = cursor.value;
-                const recordFilteredHeaders = filterAuthHeaders(record.headers);
-                if (
-                    record.apiUrl.trim() == apiUrl.trim() &&
-                    record.method.trim() == method.trim() &&
-                    JSON.stringify(recordFilteredHeaders).trim() == JSON.stringify(filteredHeaders).trim() &&
-                    JSON.stringify(record.body).trim() == JSON.stringify(body).trim()
-                ) {
-                    resolve(true); // Duplicate found
-                    return;
-                }
-                cursor.continue();
-            } else {
-                resolve(false); // No duplicate
-            }
-        };
-        request.onerror = () => resolve(false);
-    });
+// Function to filter out auth headers
+const filterAuthHeaders = (headers) => {
+    return headers.filter(header => !header.isAuth);
 };
 
 // Save the API call to IndexedDB
@@ -75,11 +49,6 @@ export const saveApiCall = async (name, apiUrl, method, headers, body) => {
     }
 
     const db = await openDatabase();
-
-    if (await isDuplicateCall(db, apiUrl, method, headers, body)) {
-        outputBox.value = "Duplicate API call found. This call was not saved.";
-        return;
-    }
 
     const transaction = db.transaction("apiCalls", "readwrite");
     const store = transaction.objectStore("apiCalls");

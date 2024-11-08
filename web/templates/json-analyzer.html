@@ -17,7 +17,7 @@
         <img id="saveIcon" src="{{ url_for('static', filename='images/save.svg') }}" alt="Save">
     </button>
     
-    <button id="historyBtn" class="history-button" title="History">
+    <button id="historyBtn" class="history-button" title="Saved Requests">
         <img id="historyIcon" src="{{ url_for('static', filename='images/history.svg') }}" alt="History">
     </button>
 
@@ -71,6 +71,10 @@
             </select>
         </div>
         <div class="right">
+            <!-- Refresh Button -->
+            <button id="refreshBtn" class="refresh-button" title="Refresh">
+                <img src="{{ url_for('static', filename='images/refresh.svg') }}" alt="Refresh" class="refresh-icon">
+            </button>
             <button id="themeToggleBtn" class="theme-toggle"
                     data-lightstyle-url="{{ url_for('static', filename='styles/lightstyle.css') }}"
                     data-darkstyle-url="{{ url_for('static', filename='styles/style.css') }}"
@@ -135,5 +139,6 @@
     <script type="module" src="{{ url_for('static', filename='scripts/history-modal.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='scripts/delete-record.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='scripts/save-modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/refresh-page.js') }}"></script>
 </body>
 </html>
