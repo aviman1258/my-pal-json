@@ -149,6 +149,7 @@ h1 {
 
 .output-container {
     position: relative;
+    top: 25px;
     width: 100%;
     height: 80%;
     padding: 0;
@@ -290,7 +291,7 @@ h1 {
 /* Headers Section */
 .headers-section {
     width: calc(100% - 40px); /* Ensure it aligns with the API request bar */
-    margin: 5px auto; /* Add spacing around the section */
+    margin: 0px auto; /* Add spacing around the section */
     background-color: #f1f1f1; /* Light background for light mode */
     padding: 5px;
     border-radius: 8px;
@@ -301,7 +302,7 @@ h1 {
 /* Header grid */
 .headers-grid {
     display: grid;
-    grid-template-columns: 1fr 4fr; /* Make the value column (right) wider than key column */
+    grid-template-columns: 32px 2fr 4fr;
     column-gap: 20px;
     row-gap: 5px;
     align-items: center; /* Center vertically */
@@ -386,3 +387,253 @@ input::placeholder {
     background-color: #FF6F00;
     color: #ffffff;
 }
+
+.tab.active:hover {
+    background-color: #E65100;
+}
+
+.tab:hover {
+    box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3); /* Light orange glow effect */
+}
+
+/* Styling for the auth-checkbox */
+.auth-checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+}
+
+.auth-checkbox:hover {
+    box-shadow: 0 0 10px 2px rgba(255, 152, 0, 0.3);
+}
+
+/* Header label styling */
+.header-label {
+    font-weight: bold;
+    padding: 5px;
+    color: #e0e0e0;
+}
+
+/* Style for IsAuth label */
+.is-auth-label {
+    font-size: 0.8rem;
+    color: #e0e0e0; /* Adjust color for each theme */
+    text-align: left;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+/* Light theme adjustment (in lightstyle.css) */
+.is-auth-label {
+    color: #333333;
+}
+
+#inputJson.highlight {
+    border: 2px dashed #FF6F00;
+    background-color: rgba(255, 152, 0, 0.3);
+}
+
+#saveBtn, #historyBtn {
+    position: absolute;
+    top: 20px;
+    width: 35px;
+    height: 35px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+#saveBtn {
+    left: 20px;
+}
+
+#historyBtn {
+    left: 65px; /* Positioned directly to the right of the Save button */
+}
+
+#saveBtn img, #historyBtn img {
+    width: 100%;
+    height: 100%;
+    filter: invert(0%);
+}
+
+#saveBtn:hover, #historyBtn:hover {
+    box-shadow: 0 0 20px 5px rgba(255, 152, 0, 0.3); /* Orange glow effect */
+}
+
+/* Modal overlay */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3); /* Lighter overlay */
+}
+
+/* Modal content box */
+.modal-content {
+    background-color: #ffffff;
+    color: #333333; /* Dark text */
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Close button */
+.close {
+    color: #333333;
+    float: right;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover, .close:focus {
+    color: #666666;
+}
+
+/* History list styling */
+.history-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+    color: #333333; /* Dark text */
+}
+
+.history-list ul {
+    padding-left: 20px; /* Indent the list for readability */
+    margin: 5px 0; /* Match <p> element margins */
+    list-style-type: none; /* Remove bullet points */
+}
+
+.history-list li {
+    font-size: 0.9rem;
+    color: #666; /* Match <p> text color */
+    margin-bottom: 5px; /* Space between list items */
+}
+
+/* Each API call item */
+.history-item {
+    position: relative;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #fafafa;
+    color: #333333;
+}
+
+.history-item h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.history-item p, .history-list ul, .history-list li {
+    margin: 5px 0 0;
+    font-size: 0.9rem;
+    color: #666; /* Color matches <p> elements in history items */
+}
+
+.delete-button, .load-button {
+    position: absolute;
+    top: 10px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.delete-button {
+    right: 40px;
+}
+
+.load-button {
+    right: 10px;
+}
+
+.delete-icon, .load-icon {
+    width: 16px;
+    height: 16px;
+    filter: invert(0%); /* For light theme */
+}
+
+.delete-button:hover .delete-icon,  .load-button:hover .load-icon {
+    filter: invert(25%);
+}
+
+.delete-button:hover {
+    background-color: rgba(230, 57, 53, 0.3); /* Soft red background */
+    box-shadow: 0 0 8px 4px rgba(230, 57, 53, 0.5); /* Red glow effect */
+}
+
+.load-button:hover {
+    background-color: rgba(30, 136, 229, 0.3); /* Blue for load button */
+    box-shadow: 0 0 8px 4px rgba(30, 136, 229, 0.5); /* Blue glow effect */
+}
+
+.confirm-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f9f9f9;
+    color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1001; /* Ensure it appears above other content */
+    text-align: center;
+}
+
+.confirm-dialog p {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.confirm-dialog button {
+    margin: 10px;
+    padding: 5px 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+#confirmDeleteBtn {
+    background-color: #e53935; /* Red button for delete */
+    color: #fff;
+}
+
+#confirmDeleteBtn:hover {
+    background-color: #c62828; /* Darker red on hover */
+}
+
+#cancelDeleteBtn {
+    background-color: #bbb; /* Light gray button for cancel */
+    color: #333;
+}
+
+#cancelDeleteBtn:hover {
+    background-color: #999; /* Darker gray on hover */
+}
+
