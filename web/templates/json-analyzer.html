@@ -106,6 +106,20 @@
         </div>
     </div>
 
+    <!-- Naming Modal for Save -->
+    <div id="saveNameModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="closeSaveModal" class="close">&times;</span>
+            <h2>Name Your API Call</h2>
+            <input type="text" id="apiCallName" placeholder="Enter name for API call">
+            <div class="modal-buttons">
+                <button id="confirmSaveBtn">Save</button>
+                <button id="cancelSaveBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
     <script src="{{ url_for('static', filename='scripts/validate-json.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/model-json.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/theme-toggle.js') }}"></script>
@@ -120,5 +134,6 @@
     <script type="module" src="{{ url_for('static', filename='scripts/save-call.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='scripts/history-modal.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='scripts/delete-record.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/save-modal.js') }}"></script>
 </body>
 </html>
