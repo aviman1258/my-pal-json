@@ -6,6 +6,8 @@ const historyModal = document.getElementById("historyModal");
 const closeModal = document.getElementById("closeModal");
 const historyList = document.getElementById("historyList");
 
+let draggedItem = null;
+
 // Function to open the modal and load API call history
 document.getElementById("historyBtn").addEventListener("click", async () => {
     const db = await openDatabase();
@@ -24,6 +26,52 @@ window.onclick = function(event) {
         historyModal.style.display = "none";
     }
 };
+
+function handleDragStart(event) {
+    draggedItem = this;
+    event.dataTransfer.effectAllowed = "move";
+    this.classList.add("dragging");
+}
+
+function handleDrop(event) {
+    event.preventDefault();
+
+    // Clear drop indicators
+    document.querySelectorAll('.drop-indicator-dark, .drop-indicator-light').forEach(item => {
+        item.classList.remove('drop-indicator-dark', 'drop-indicator-light');
+    });
+
+    if (draggedItem !== this) {
+        historyList.insertBefore(draggedItem, this.nextSibling);
+    }
+}
+
+function handleDragEnd() {
+    this.classList.remove("dragging");
+}
+
+function handleDragOver(event) {
+    event.preventDefault();
+
+    // Remove existing indicators
+    document.querySelectorAll('.drop-indicator-dark, .drop-indicator-light').forEach(item => {
+        item.classList.remove('drop-indicator-dark', 'drop-indicator-light');
+    });
+
+    // Determine theme
+    const isLightTheme = document.getElementById("themeStylesheet").getAttribute("href").includes("lightstyle.css");
+
+    // Apply appropriate indicator based on theme
+    if (isLightTheme) {
+        this.classList.remove("drop-indicator-dark")
+        this.classList.add("drop-indicator-light");        
+    } else {
+        this.classList.remove("drop-indicator-light")
+        this.classList.add("drop-indicator-dark");
+    }
+
+    event.dataTransfer.dropEffect = "move";
+}
 
 function loadApiCallIntoForm(apiCall) {
     // Set the API URL
@@ -80,6 +128,8 @@ export const loadApiCallHistory = (db) => {
         apiCalls.forEach(apiCall => {
             const item = document.createElement("div");
             item.classList.add("history-item");
+            item.setAttribute("draggable", "true");
+            item.dataset.id = apiCall.id;
 
             // Display headers as a list
             let headersHtml = `<ul class="header-list">`;
@@ -108,13 +158,29 @@ export const loadApiCallHistory = (db) => {
             });
 
             item.innerHTML = `
-                <h3>${apiCall.name || "Unnamed API Call"}</h3>
+                <h3 contenteditable="true" class="editable-name">${apiCall.name || "Unnamed API Call"}</h3>
                 <p>${apiCall.method} ${apiCall.apiUrl}<p>
                 <p>Headers:</p>
                 ${headersHtml}
                 <p>Body: ${apiCall.body || "None"}</p>
             `;
-            item.appendChild(deleteButton); // Add delete button to the item
+
+            item.querySelector(".editable-name").addEventListener("blur", function () {
+                saveEditedName(apiCall.id, this.innerText);
+            });
+        
+            item.querySelector(".editable-name").addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Prevent newline
+                    this.blur(); // Trigger the blur event to save changes
+                }
+            });
+
+            item.addEventListener("dragstart", handleDragStart);
+            item.addEventListener("drop", handleDrop);
+            item.addEventListener("dragend", handleDragEnd);
+            item.addEventListener("dragover", handleDragOver)
+            item.appendChild(deleteButton);
             item.appendChild(loadButton);
             historyList.appendChild(item);
         });
@@ -124,5 +190,36 @@ export const loadApiCallHistory = (db) => {
         historyList.innerHTML = "<p>Error loading API call history.</p>";
     };
 };
+
+function saveEditedName(id, newName) {
+    const dbRequest = indexedDB.open("MyPalJsonDB", 1);
+
+    dbRequest.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction("apiCalls", "readwrite");
+        const store = transaction.objectStore("apiCalls");
+
+        // Get the specific record and update its name
+        const getRequest = store.get(id);
+        getRequest.onsuccess = function() {
+            const apiCall = getRequest.result;
+            apiCall.name = newName;
+            store.put(apiCall); // Save updated record back to IndexedDB
+        };
+
+        transaction.oncomplete = function() {
+            console.log("Name updated successfully!");
+        };
+
+        transaction.onerror = function() {
+            console.error("Error updating name.");
+        };
+    };
+
+    dbRequest.onerror = function() {
+        console.error("Could not open database.");
+    };
+}
+
 
 

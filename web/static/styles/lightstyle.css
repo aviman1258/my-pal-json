@@ -514,7 +514,19 @@ input::placeholder {
     padding: 20px;
     border-radius: 8px;
     width: 80%;
+    height: 80%;
     max-width: 600px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.save-modal-content {
+    background-color: #ffffff;
+    color: #333333;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 50%;
+    max-width: 400px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -533,14 +545,24 @@ input::placeholder {
 
 /* History list styling */
 .history-list {
-    max-height: 400px;
+    height: 90%;
     overflow-y: auto;
     margin-top: 15px;
     padding: 10px;
     background-color: #f1f1f1;
+    color: #333333; /* Dark text */
     border-radius: 8px;
     box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
-    color: #333333; /* Dark text */
+    cursor: grab;
+}
+
+.history-item:active {
+    cursor: grabbing;
+}
+
+.history-item.dragging {
+    opacity: 0.5;
+    background-color: #e0e0e0; /* Light gray, adjust as needed */
 }
 
 .history-list ul {
@@ -575,6 +597,28 @@ input::placeholder {
     margin: 5px 0 0;
     font-size: 0.9rem;
     color: #666; /* Color matches <p> elements in history items */
+}
+
+/* Drop indicator for light theme */
+.history-item.drop-indicator-light::after {
+    content: "";
+    display: block;
+    height: 2px;
+    align-content: left;
+    background-color: #333; /* Dark line for light theme */
+    margin-top: 0px;
+    position: relative;
+}
+
+.editable-name {
+    cursor: text;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.2s ease;
+}
+
+.editable-name:focus {
+    outline: none; /* Remove default outline */
+    border-color: #aaa; /* Optional: Change color on edit */
 }
 
 .delete-button, .load-button {
