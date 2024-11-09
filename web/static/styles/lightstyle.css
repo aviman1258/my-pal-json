@@ -538,9 +538,19 @@ input::placeholder {
     margin-top: 15px;
     padding: 10px;
     background-color: #f1f1f1;
+    color: #333333; /* Dark text */
     border-radius: 8px;
     box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
-    color: #333333; /* Dark text */
+    cursor: grab;
+}
+
+.history-item:active {
+    cursor: grabbing;
+}
+
+.history-item.dragging {
+    opacity: 0.5;
+    background-color: #e0e0e0; /* Light gray, adjust as needed */
 }
 
 .history-list ul {
@@ -575,6 +585,16 @@ input::placeholder {
     margin: 5px 0 0;
     font-size: 0.9rem;
     color: #666; /* Color matches <p> elements in history items */
+}
+
+/* Drop indicator for light theme */
+.history-item.drop-indicator-light::after {
+    content: "";
+    display: block;
+    height: 2px;
+    background-color: red; /* Dark line for light theme */
+    margin-top: -1px;
+    position: absolute;
 }
 
 .delete-button, .load-button {

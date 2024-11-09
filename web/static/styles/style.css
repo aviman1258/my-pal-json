@@ -548,6 +548,19 @@ input::placeholder {
     color: #e0e0e0;
     border-radius: 8px;
     box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: grab;
+}
+
+.history-item:active {
+    cursor: grabbing;
+}
+
+.history-item.dragging {
+    opacity: 0.8;
+    background-color: #333; /* Dark gray background */
+    border: 1px solid #555; /* Subtle border for contrast */
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Light shadow */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .history-list ul {
@@ -582,6 +595,16 @@ input::placeholder {
     margin: 5px 0 0;
     font-size: 0.9rem;
     color: #666; /* Color matches <p> elements in history items */
+}
+
+/* Drop indicator for dark theme */
+.history-item.drop-indicator-dark::after {
+    content: "";
+    display: block;
+    height: 2px;
+    background-color: white; /* White line for dark theme */
+    margin-top: -1px;
+    position: absolute;
 }
 
 .delete-button, .load-button {

@@ -6,6 +6,8 @@ const historyModal = document.getElementById("historyModal");
 const closeModal = document.getElementById("closeModal");
 const historyList = document.getElementById("historyList");
 
+let draggedItem = null;
+
 // Function to open the modal and load API call history
 document.getElementById("historyBtn").addEventListener("click", async () => {
     const db = await openDatabase();
@@ -24,6 +26,54 @@ window.onclick = function(event) {
         historyModal.style.display = "none";
     }
 };
+
+function handleDragStart(event) {
+    draggedItem = this;
+    event.dataTransfer.effectAllowed = "move";
+    this.classList.add("dragging");
+}
+
+function handleDrop(event) {
+    event.preventDefault();
+
+    // Clear drop indicators
+    document.querySelectorAll('.drop-indicator-dark, .drop-indicator-light').forEach(item => {
+        item.classList.remove('drop-indicator-dark', 'drop-indicator-light');
+    });
+
+    if (draggedItem !== this) {
+        historyList.insertBefore(draggedItem, this.nextSibling);
+    }
+}
+
+function handleDragEnd() {
+    this.classList.remove("dragging");
+}
+
+function handleDragOver(event) {
+    event.preventDefault();
+
+    // Remove existing indicators
+    document.querySelectorAll('.drop-indicator-dark, .drop-indicator-light').forEach(item => {
+        item.classList.remove('drop-indicator-dark', 'drop-indicator-light');
+    });
+
+    // Determine theme
+    const isLightTheme = document.getElementById("themeStylesheet").getAttribute("href").includes("lightstyle.css");
+
+    // Apply appropriate indicator based on theme
+    if (isLightTheme) {
+        console.log("Applying light drop indicator"); // Debugging line
+        this.classList.remove("drop-indicator-dark")
+        this.classList.add("drop-indicator-light");        
+    } else {
+        console.log("Applying dark drop indicator"); // Debugging line
+        this.classList.remove("drop-indicator-light")
+        this.classList.add("drop-indicator-dark");
+    }
+
+    event.dataTransfer.dropEffect = "move";
+}
 
 function loadApiCallIntoForm(apiCall) {
     // Set the API URL
@@ -80,6 +130,8 @@ export const loadApiCallHistory = (db) => {
         apiCalls.forEach(apiCall => {
             const item = document.createElement("div");
             item.classList.add("history-item");
+            item.setAttribute("draggable", "true");
+            item.dataset.id = apiCall.id;
 
             // Display headers as a list
             let headersHtml = `<ul class="header-list">`;
@@ -114,7 +166,12 @@ export const loadApiCallHistory = (db) => {
                 ${headersHtml}
                 <p>Body: ${apiCall.body || "None"}</p>
             `;
-            item.appendChild(deleteButton); // Add delete button to the item
+
+            item.addEventListener("dragstart", handleDragStart);
+            item.addEventListener("drop", handleDrop);
+            item.addEventListener("dragend", handleDragEnd);
+            item.addEventListener("dragover", handleDragOver)
+            item.appendChild(deleteButton);
             item.appendChild(loadButton);
             historyList.appendChild(item);
         });
