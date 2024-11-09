@@ -63,11 +63,9 @@ function handleDragOver(event) {
 
     // Apply appropriate indicator based on theme
     if (isLightTheme) {
-        console.log("Applying light drop indicator"); // Debugging line
         this.classList.remove("drop-indicator-dark")
         this.classList.add("drop-indicator-light");        
     } else {
-        console.log("Applying dark drop indicator"); // Debugging line
         this.classList.remove("drop-indicator-light")
         this.classList.add("drop-indicator-dark");
     }

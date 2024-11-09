@@ -514,6 +514,7 @@ input::placeholder {
     padding: 20px;
     border-radius: 8px;
     width: 80%;
+    height: 80%;
     max-width: 600px;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
 }
@@ -533,7 +534,7 @@ input::placeholder {
 
 /* History list styling */
 .history-list {
-    max-height: 400px;
+    height: 90%;
     overflow-y: auto;
     margin-top: 15px;
     padding: 10px;
@@ -592,9 +593,10 @@ input::placeholder {
     content: "";
     display: block;
     height: 2px;
-    background-color: red; /* Dark line for light theme */
-    margin-top: -1px;
-    position: absolute;
+    align-content: left;
+    background-color: #333; /* Dark line for light theme */
+    margin-top: 0px;
+    position: relative;
 }
 
 .delete-button, .load-button {
