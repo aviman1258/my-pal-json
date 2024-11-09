@@ -158,12 +158,23 @@ export const loadApiCallHistory = (db) => {
             });
 
             item.innerHTML = `
-                <h3>${apiCall.name || "Unnamed API Call"}</h3>
+                <h3 contenteditable="true" class="editable-name">${apiCall.name || "Unnamed API Call"}</h3>
                 <p>${apiCall.method} ${apiCall.apiUrl}<p>
                 <p>Headers:</p>
                 ${headersHtml}
                 <p>Body: ${apiCall.body || "None"}</p>
             `;
+
+            item.querySelector(".editable-name").addEventListener("blur", function () {
+                saveEditedName(apiCall.id, this.innerText);
+            });
+        
+            item.querySelector(".editable-name").addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Prevent newline
+                    this.blur(); // Trigger the blur event to save changes
+                }
+            });
 
             item.addEventListener("dragstart", handleDragStart);
             item.addEventListener("drop", handleDrop);
@@ -179,5 +190,36 @@ export const loadApiCallHistory = (db) => {
         historyList.innerHTML = "<p>Error loading API call history.</p>";
     };
 };
+
+function saveEditedName(id, newName) {
+    const dbRequest = indexedDB.open("MyPalJsonDB", 1);
+
+    dbRequest.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction("apiCalls", "readwrite");
+        const store = transaction.objectStore("apiCalls");
+
+        // Get the specific record and update its name
+        const getRequest = store.get(id);
+        getRequest.onsuccess = function() {
+            const apiCall = getRequest.result;
+            apiCall.name = newName;
+            store.put(apiCall); // Save updated record back to IndexedDB
+        };
+
+        transaction.oncomplete = function() {
+            console.log("Name updated successfully!");
+        };
+
+        transaction.onerror = function() {
+            console.error("Error updating name.");
+        };
+    };
+
+    dbRequest.onerror = function() {
+        console.error("Could not open database.");
+    };
+}
+
 
 

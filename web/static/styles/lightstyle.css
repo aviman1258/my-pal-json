@@ -519,6 +519,17 @@ input::placeholder {
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
 }
 
+.save-modal-content {
+    background-color: #ffffff;
+    color: #333333;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 50%;
+    max-width: 400px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
 /* Close button */
 .close {
     color: #333333;
@@ -597,6 +608,17 @@ input::placeholder {
     background-color: #333; /* Dark line for light theme */
     margin-top: 0px;
     position: relative;
+}
+
+.editable-name {
+    cursor: text;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.2s ease;
+}
+
+.editable-name:focus {
+    outline: none; /* Remove default outline */
+    border-color: #aaa; /* Optional: Change color on edit */
 }
 
 .delete-button, .load-button {
