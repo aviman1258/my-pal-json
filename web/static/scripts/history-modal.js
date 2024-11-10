@@ -7,6 +7,7 @@ const closeModal = document.getElementById("closeModal");
 const historyList = document.getElementById("historyList");
 
 let draggedItem = null;
+let scrollInterval = null;
 
 // Function to open the modal and load API call history
 document.getElementById("historyBtn").addEventListener("click", async () => {
@@ -33,8 +34,25 @@ function handleDragStart(event) {
     this.classList.add("dragging");
 }
 
+// Function to start auto-scrolling based on direction
+function startAutoScroll(direction) {
+    stopAutoScroll(); // Clear any previous interval
+    scrollInterval = setInterval(() => {
+        historyList.scrollTop += direction === 'up' ? -10 : 10; // Adjust scroll speed as needed
+    }, 20); // Scroll interval for smoothness
+}
+
+// Function to stop auto-scrolling
+function stopAutoScroll() {
+    if (scrollInterval) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
+    }
+}
+
 function handleDrop(event) {
     event.preventDefault();
+    stopAutoScroll();
 
     // Clear drop indicators
     document.querySelectorAll('.drop-indicator-dark, .drop-indicator-light').forEach(item => {
@@ -48,6 +66,7 @@ function handleDrop(event) {
 
 function handleDragEnd() {
     this.classList.remove("dragging");
+    stopAutoScroll();
 }
 
 function handleDragOver(event) {
@@ -71,6 +90,18 @@ function handleDragOver(event) {
     }
 
     event.dataTransfer.dropEffect = "move";
+
+    // Auto-scroll logic
+    const rect = historyList.getBoundingClientRect();
+    const offset = 20; // Distance from the top/bottom edge to start scrolling
+
+    if (event.clientY < rect.top + offset) {
+        startAutoScroll('up'); // Near the top, scroll up
+    } else if (event.clientY > rect.bottom - offset) {
+        startAutoScroll('down'); // Near the bottom, scroll down
+    } else {
+        stopAutoScroll(); // Stop scrolling if not near the edges
+    }
 }
 
 function loadApiCallIntoForm(apiCall) {
