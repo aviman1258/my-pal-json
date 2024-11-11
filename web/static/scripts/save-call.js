@@ -53,15 +53,38 @@ export const saveApiCall = async (name, apiUrl, method, headers, body) => {
     const transaction = db.transaction("apiCalls", "readwrite");
     const store = transaction.objectStore("apiCalls");
 
-    const apiCall = { name, apiUrl, method, headers, body: dataStore.requestData, timestamp: Date.now() };
-    store.add(apiCall);
+    const getAllRequest = store.getAll();
 
-    transaction.oncomplete = () => {
-        outputBox.value = "API call saved successfully.";
-        closeSaveModal();
+    getAllRequest.onsuccess = (event) => {
+        const apiCalls = event.target.result;
+        
+        // Find the highest order value or default to 0 if no items exist
+        const maxOrder = apiCalls.length 
+            ? Math.max(...apiCalls.map(call => call.order !== undefined ? call.order : 0)) : 0;
+
+        // Create new API call with incremented order
+        const apiCall = {
+            name,
+            apiUrl,
+            method,
+            headers,
+            body: dataStore.requestData,
+            timestamp: Date.now(),
+            order: maxOrder + 1 // Increment the highest order value
+        };
+        store.add(apiCall);
+
+        transaction.oncomplete = () => {
+            outputBox.value = "API call saved successfully.";
+            closeSaveModal();
+        };
+        transaction.onerror = () => {
+            outputBox.value = "Error saving API call.";
+        };
     };
-    transaction.onerror = () => {
-        outputBox.value = "Error saving API call.";
+
+    getAllRequest.onerror = () => {
+        outputBox.value = "Error retrieving order information.";
     };
 };
 

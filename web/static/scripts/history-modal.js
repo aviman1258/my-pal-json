@@ -61,6 +61,7 @@ function handleDrop(event) {
 
     if (draggedItem !== this) {
         historyList.insertBefore(draggedItem, this.nextSibling);
+        updateOrderInDatabase();
     }
 }
 
@@ -155,6 +156,8 @@ export const loadApiCallHistory = (db) => {
             return;
         }
 
+        apiCalls.sort((a, b) => a.order - b.order);
+
         // Display each API call as an item in the history list
         apiCalls.forEach(apiCall => {
             const item = document.createElement("div");
@@ -164,6 +167,7 @@ export const loadApiCallHistory = (db) => {
 
             // Display headers as a list
             let headersHtml = `<ul class="header-list">`;
+
             apiCall.headers.forEach(header => {
                 headersHtml += `<li>${header.name}: ${header.value}</li>`;
             });
@@ -181,6 +185,16 @@ export const loadApiCallHistory = (db) => {
             loadButton.classList.add("load-button");
             loadButton.innerHTML = `<img src="/static/images/load.svg" alt="Load" class="load-icon">`;
             loadButton.title = "Load";
+
+             // Create chain button
+             const chainButton = document.createElement("button");
+             chainButton.classList.add("chain-button");
+             chainButton.innerHTML = `<img src="/static/images/chain.svg" alt="Chain" class="chain-icon">`;
+             chainButton.title = "Chain";
+             
+             chainButton.addEventListener("click", () => {
+                item.classList.toggle("highlighted");
+             });
 
             // Load the API call data into My Pal JSON on click
             loadButton.addEventListener("click", () => {
@@ -213,6 +227,7 @@ export const loadApiCallHistory = (db) => {
             item.addEventListener("dragover", handleDragOver)
             item.appendChild(deleteButton);
             item.appendChild(loadButton);
+            item.appendChild(chainButton);
             historyList.appendChild(item);
         });
     };
@@ -252,5 +267,35 @@ function saveEditedName(id, newName) {
     };
 }
 
+function updateOrderInDatabase() {
+    const items = Array.from(historyList.children); // Get all items in the new order
+    console.log(items);
+
+    const dbRequest = indexedDB.open("MyPalJsonDB", 1);
+
+    dbRequest.onsuccess = function(event) {
+        const db = event.target.result;
+        const transaction = db.transaction("apiCalls", "readwrite");
+        const store = transaction.objectStore("apiCalls");
+
+        items.forEach((item, index) => {
+            const id = item.dataset.id;
+            console.log("id: " + id );
+            console.log("index: " + index);
+            const order = index; // New order based on position in the DOM
+            console.log("order: " + order);
+
+            // Retrieve the item and update its order
+            const request = store.get(id);
+            request.onsuccess = function(event) {
+                const apiCall = event.target.result;
+                apiCall.order = order; // Update the order property
+                store.put(apiCall); // Save updated item
+            };
+        });
+    };
+
+    dbRequest.onerror = () => console.error("Could not open database.");
+}
 
 

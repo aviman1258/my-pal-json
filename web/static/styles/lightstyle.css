@@ -621,7 +621,7 @@ input::placeholder {
     border-color: #aaa; /* Optional: Change color on edit */
 }
 
-.delete-button, .load-button {
+.delete-button, .load-button, .chain-button {
     position: absolute;
     top: 10px;
     background: none;
@@ -640,13 +640,17 @@ input::placeholder {
     right: 10px;
 }
 
-.delete-icon, .load-icon {
+.chain-button {
+    right: 70px;
+}
+
+.delete-icon, .load-icon, .chain-icon {
     width: 16px;
     height: 16px;
     filter: invert(0%); /* For light theme */
 }
 
-.delete-button:hover .delete-icon,  .load-button:hover .load-icon {
+.delete-button:hover .delete-icon,  .load-button:hover .load-icon, .chain-button:hover .chain-icon {
     filter: invert(25%);
 }
 
@@ -658,6 +662,11 @@ input::placeholder {
 .load-button:hover {
     background-color: rgba(30, 136, 229, 0.3); /* Blue for load button */
     box-shadow: 0 0 8px 4px rgba(30, 136, 229, 0.5); /* Blue glow effect */
+}
+
+.chain-button:hover {
+    background-color: #e6702c; /* Darker orange on hover */
+    box-shadow: 0 0 10px 2px rgba(236, 173, 100, 0.877); /* Light orange glow effect */
 }
 
 .confirm-dialog {
@@ -793,4 +802,7 @@ input::placeholder {
     background-color: #999999; /* Darker gray on hover */
 }
 
-
+.highlighted {
+    background-color: #f0f8ff; /* Light blue or a color of your choice */
+    border: 1px solid #0099ff; /* Border to make it stand out */
+}
