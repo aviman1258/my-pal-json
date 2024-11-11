@@ -252,46 +252,37 @@ function saveEditedName(id, newName) {
             apiCall.name = newName;
             store.put(apiCall); // Save updated record back to IndexedDB
         };
-
-        transaction.oncomplete = function() {
-            console.log("Name updated successfully!");
-        };
-
-        transaction.onerror = function() {
-            console.error("Error updating name.");
-        };
-    };
-
-    dbRequest.onerror = function() {
-        console.error("Could not open database.");
     };
 }
 
 function updateOrderInDatabase() {
     const items = Array.from(historyList.children); // Get all items in the new order
-    console.log(items);
 
     const dbRequest = indexedDB.open("MyPalJsonDB", 1);
 
-    dbRequest.onsuccess = function(event) {
-        const db = event.target.result;
+    dbRequest.onsuccess = async function(event) {
+        const db = await openDatabase();
         const transaction = db.transaction("apiCalls", "readwrite");
         const store = transaction.objectStore("apiCalls");
 
         items.forEach((item, index) => {
             const id = item.dataset.id;
-            console.log("id: " + id );
-            console.log("index: " + index);
             const order = index; // New order based on position in the DOM
-            console.log("order: " + order);
 
             // Retrieve the item and update its order
-            const request = store.get(id);
-            request.onsuccess = function(event) {
-                const apiCall = event.target.result;
-                apiCall.order = order; // Update the order property
-                store.put(apiCall); // Save updated item
-            };
+            try{
+                const request = store.get(id);
+                request.onsuccess = function(event) {
+                    const apiCall = event.target.result;
+                    apiCall.order = order; 
+                    store.put(apiCall); 
+                };
+                request.onerror = function() {
+                    console.error(`Error retrieving API call with ID ${id}:`, request.error);
+                };
+            } catch (error){
+                console.error("Unexpected error occurred while accessing the store:", error);
+            }            
         });
     };
 
