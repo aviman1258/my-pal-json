@@ -1,0 +1,15 @@
+# Works with `podman compose up -d` and `docker compose up -d`.
+services:
+  my-pal-json:
+    image: docker.io/achandra1258/my-pal-json:2.0
+    build: .
+    container_name: my-pal-json
+    ports:
+      - "127.0.0.1:5000:5000"   # only reachable from this machine
+    environment:
+      HOST_ALIAS: host.containers.internal,host.docker.internal   # first that connects wins
+      WORKERS: "2"
+    # If your network re-signs TLS (corporate proxy), drop the root CA (.crt or .pem) in ./certs:
+    # volumes:
+    #   - ./certs:/certs:ro
+    restart: unless-stopped

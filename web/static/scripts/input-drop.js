@@ -33,7 +33,8 @@ document.addEventListener("DOMContentLoaded", function() {
             const file = files[0];
             const reader = new FileReader();
             reader.onload = function(event) {
-                inputJson.value = event.target.result; // Insert file content into the textarea
+                inputJson.value = event.target.result;
+                inputJson.dispatchEvent(new Event("input", { bubbles: true }));
                 unhighlight(); // Remove the highlight styling
             };
             reader.readAsText(file);

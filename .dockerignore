@@ -1,1 +1,11 @@
-./web/venv/
+.git
+.vscode
+.vs
+web/venv/
+**/__pycache__/
+*.pyc
+terminal-based/
+certs/
+*.md
+docker-compose.yml
+compose.yaml
