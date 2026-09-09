@@ -9,6 +9,8 @@ import {
 } from "./postman.js";
 import { dataStore, requestEvents } from "./send-request.js";
 import { openSettings } from "./settings-panel.js";
+import { ensureActiveEnv, saveEnvironment } from "./environments.js";
+import { createSecretAllocator, describeMoves } from "./secret-scrub.js";
 
 const drawer = () => document.getElementById("collectionsDrawer");
 const treeEl = () => document.getElementById("collectionTree");
@@ -411,19 +413,27 @@ async function confirmPush() {
     const btn = document.getElementById("confirmPushBtn");
     if (!paths.length) { toast("Select at least one file.", "warn"); return; }
 
-    // Scrub secrets in every request of every selected collection before serializing.
+    // Move literal secrets in every request of every selected collection into the active
+    // environment and replace them with {{placeholders}} before serializing. Same value under the
+    // same key reuses one variable; a different value gets apiKey2, apiKey3, ...
+    const env = await ensureActiveEnv("Secrets");
+    const allocator = createSecretAllocator(env.vars);
     const scrubbed = [];
     for (const p of paths) {
         const f = store.getFile(p);
         if (f && f.kind === "collection" && f.collection) {
             for (const node of walkRequests(f.collection.root)) {
                 const appHeaders = itemToRequest(node.item, inheritedAuth(node)).headers;
-                scrubSecrets(node.item, appHeaders).forEach(c => scrubbed.push(`${fileBaseName(p)} › ${node.name}: ${c.where} → ${c.to}`));
+                const where = `${fileBaseName(p)} › ${node.name}`;
+                scrubSecrets(node.item, appHeaders, allocator.nameFor, where).forEach(c => scrubbed.push(`${where}: ${c.where} → ${c.to}`));
             }
         }
     }
+    if (allocator.moved.length) await saveEnvironment({ ...env, vars: allocator.vars });
     summary.innerHTML = scrubbed.length
-        ? `Replaced ${scrubbed.length} secret-looking value${scrubbed.length === 1 ? "" : "s"} with placeholders:<br>${scrubbed.map(escapeHtml).join("<br>")}` : "";
+        ? `Replaced ${scrubbed.length} secret-looking value${scrubbed.length === 1 ? "" : "s"} with placeholders` +
+          (allocator.moved.length ? `; values saved to environment "${escapeHtml(env.name)}": ${describeMoves(allocator.moved).map(escapeHtml).join(", ")}` : "") +
+          `:<br>${scrubbed.map(escapeHtml).join("<br>")}` : "";
 
     btn.disabled = true;
     const lines = [];

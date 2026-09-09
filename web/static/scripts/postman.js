@@ -180,10 +180,13 @@ export function newCollection(name) {
 // ---------- secret scrubbing (write path) ----------
 
 // Replace literal secret-looking values with {{placeholders}}. Returns a list of what changed.
-export function scrubSecrets(item, appHeaders = null) {
+// `nameFor(key, value, where)` picks the placeholder name; the default derives it from the key.
+// Pass an allocator from secret-scrub.js to also move the values into an environment.
+export function scrubSecrets(item, appHeaders = null, nameFor = (key) => toCamel(key), where = "") {
     const changes = [];
     const req = item.request;
     if (!req || typeof req !== "object") return changes;
+    const ph = (key, value, spot) => `{{${nameFor(key, value, where ? `${where} ${spot}` : spot)}}}`;
 
     const isAuthKey = (key) => {
         if (SECRET_KEY_RE.test(key)) return true;
@@ -197,19 +200,19 @@ export function scrubSecrets(item, appHeaders = null) {
     for (const h of req.header || []) {
         const v = h.value == null ? "" : String(h.value);
         if (isAuthKey(h.key || "") && v.trim() !== "" && !isPlaceholder(v)) {
-            const ph = `{{${toCamel(h.key)}}}`;
-            changes.push({ where: `header ${h.key}`, from: v, to: ph });
-            h.value = ph;
+            const to = ph(h.key, v, `header ${h.key}`);
+            changes.push({ where: `header ${h.key}`, from: v, to });
+            h.value = to;
         }
     }
 
     if (req.body && req.body.mode === "raw" && typeof req.body.raw === "string") {
-        const kv = /(["'])([A-Za-z_][A-Za-z0-9_-]*)\1\s*:\s*(["'])((?:(?!\3)[^\\]|\\.){6,}?)\3/g;
+        const kv = /(["'])([A-Za-z_][A-Za-z0-9_-]*)\1\s*:\s*(["'])((?:(?!\3)[^\\]|\\.)+?)\3/g;
         req.body.raw = req.body.raw.replace(kv, (whole, q1, key, q3, val) => {
             if (SECRET_KEY_RE.test(key) && !isPlaceholder(val)) {
-                const ph = `{{${toCamel(key)}}}`;
-                changes.push({ where: `body ${key}`, from: val, to: ph });
-                return `${q1}${key}${q1}: ${q3}${ph}${q3}`;
+                const to = ph(key, val, `body ${key}`);
+                changes.push({ where: `body ${key}`, from: val, to });
+                return `${q1}${key}${q1}: ${q3}${to}${q3}`;
             }
             return whole;
         });
@@ -219,9 +222,9 @@ export function scrubSecrets(item, appHeaders = null) {
         for (const q of req.url.query) {
             const v = q.value == null ? "" : String(q.value);
             if (SECRET_KEY_RE.test(q.key || "") && v.trim() !== "" && !isPlaceholder(v)) {
-                const ph = `{{${toCamel(q.key)}}}`;
-                changes.push({ where: `query ${q.key}`, from: v, to: ph });
-                q.value = ph;
+                const to = ph(q.key, v, `query ${q.key}`);
+                changes.push({ where: `query ${q.key}`, from: v, to });
+                q.value = to;
             }
         }
     }
@@ -233,9 +236,17 @@ export function isPlaceholder(v) {
     return s === "" || s.startsWith("{{") || s.startsWith("<") || ["null", "true", "false"].includes(s.toLowerCase());
 }
 
+// "x-api-key" -> apiKey, "client_secret" -> clientSecret, "Authorization" -> authorization,
+// "ApiKey" / "apiKey" -> apiKey (an existing camelCase key keeps its inner capitals).
 export function toCamel(key) {
     const parts = String(key).replace(/^x-/i, "").split(/[^A-Za-z0-9]+/).filter(Boolean);
-    return parts.map((p, i) => i === 0 ? p.toLowerCase() : p[0].toUpperCase() + p.slice(1).toLowerCase()).join("") || "secret";
+    if (!parts.length) return "secret";
+    if (parts.length === 1) {
+        const p = parts[0];
+        const mixed = /[a-z]/.test(p) && /[A-Z]/.test(p.slice(1));
+        return mixed ? p[0].toLowerCase() + p.slice(1) : p.toLowerCase();
+    }
+    return parts.map((p, i) => i === 0 ? p.toLowerCase() : p[0].toUpperCase() + p.slice(1).toLowerCase()).join("");
 }
 
 // ---------- tree operations (mutate _raw through node references) ----------

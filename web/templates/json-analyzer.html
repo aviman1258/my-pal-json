@@ -122,6 +122,11 @@
             <span class="spacer"></span>
             <span id="chainRunStatus"></span>
         </div>
+        <details id="chainVarsPanel" class="chain-vars" hidden>
+            <summary>Chain variables <span id="chainVarsCount"></span>
+                <span class="msg-muted">— values saved with this chain, e.g. test ids. Use them as {{ '{{name}}' }}. Secrets belong in an environment instead.</span></summary>
+            <div id="chainVarsGrid" class="kv-grid"></div>
+        </details>
         <ol id="chainSteps" class="chain-steps"></ol>
         <button id="chainAddStepBtn" class="chain-add-step" hidden>+ Add step</button>
     </section>

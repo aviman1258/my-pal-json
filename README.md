@@ -146,7 +146,7 @@ Then open the **Collections** drawer (top-left icon):
 - **Pull** lists every `*.postman_collection.json` and `*.mypaljson_chain.json` at the repo root and one folder down, and shows them as a tree.
 - Click a request to load it into the Request tab. Right-click (or ⋯) a row for **New request / New folder / Rename / Duplicate / Delete**. **+** creates a new collection file.
 - **Save** (or Ctrl+S) writes the form back into the loaded request; **Save as…** adds it somewhere else. Changes stay local until you **Push**.
-- **Push** commits one file per changed collection with your message. Before writing, values in secret-looking headers, query parameters and body fields (`Authorization`, `x-api-key`, `client_secret`, …) are replaced with `{{placeholders}}` and listed in the dialog. If someone else changed the file in the meantime you get a clear "changed on the server, pull again" message instead of a silent overwrite.
+- **Push** commits one file per changed collection with your message. Before writing, values in secret-looking headers, query parameters and body fields (`Authorization`, `x-api-key`, `client_secret`, …) are moved into your active environment and replaced with `{{placeholders}}`, so the request keeps working for you while the repo only sees the placeholder. The dialog lists what moved. Same key and same value reuse one variable; a different value under the same key becomes `apiKey2`, `apiKey3`, and so on, and existing environment values are never overwritten. If someone else changed the file in the meantime you get a clear "changed on the server, pull again" message instead of a silent overwrite.
 
 Everything the app doesn't understand in a collection (pre-request scripts, tests, descriptions, auth blocks, ids) round-trips untouched. Pre-request scripts are not executed.
 
@@ -160,9 +160,10 @@ A chain runs requests in order and passes values between them.
 
 1. **New** chain, then **+ Add step**: from a collection, from the Request tab, or blank.
 2. Expand a step. Run it once with ▶. In the response, **+ pick from response** and click any value: its JSON path (e.g. `$.data[0].id`) becomes a named output. **+ pick header** does the same for a response header. **+ manual** lets you type a path.
-3. Use the output as `{{name}}` in any later step. Numbers insert unquoted, so `"id": {{userId}}` gives `"id": 7`; wrap text in quotes yourself. Inputs that reference a variable no earlier step or the environment provides are outlined in yellow before you even run.
+3. Use the output as `{{name}}` in any later step. Numbers insert unquoted, so `"id": {{userId}}` gives `"id": 7`; wrap text in quotes yourself. Inputs that reference a variable nothing provides are outlined in yellow before you even run; click the name in the warning to define it on the spot.
+   Values can come from three places, later ones win: the active **environment** (secrets, per-machine values), **chain variables** (the panel above the steps: test ids and other values that should travel with the chain file), and **outputs** of earlier steps.
 4. **▶ Run chain** runs everything; ▶▶ on a step runs from there using the outputs the last run captured; ▶ runs just that step. A failing step (HTTP 4xx/5xx or an unresolved variable) stops the chain unless **continue on error** is ticked. Drag the ⋮⋮ handle to reorder.
-5. Chains autosave as drafts in the browser. **Push to repo** commits `<name>.mypaljson_chain.json` next to your collections so the chain travels with the team; chains found in the repo appear in the chain picker for import. Pushing refuses literal auth header values, use `{{variables}}`.
+5. Chains autosave as drafts in the browser. **Push to repo** commits `<name>.mypaljson_chain.json` next to your collections so the chain travels with the team; chains found in the repo appear in the chain picker for import. Literal secrets (auth headers, secret-looking header names, body fields like `apiKey` or `clientSecret`, secret-looking chain variables) are moved into your active environment and replaced with `{{placeholders}}` before the push, after a confirmation that lists them. The chain keeps running on your machine; teammates set the same variables in their own environment. Naming follows the collection rule: `apiKey`, then `apiKey2` for a different value.
 
 Chain file format (`schemaVersion: 1`):
 
@@ -170,6 +171,7 @@ Chain file format (`schemaVersion: 1`):
 {
   "schemaVersion": 1,
   "name": "TU-Screening",
+  "variables": { "landlordId": "5975200", "propertyId": "2763882" },
   "steps": [{
     "id": "s_8f3k2a",
     "label": "Get token",

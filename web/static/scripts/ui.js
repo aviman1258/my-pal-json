@@ -65,6 +65,61 @@ export function hideContextMenu() {
     if (m) m.remove();
 }
 
+// Editable key/value grid (three columns: key, value, delete) with an always-present empty
+// trailing row. `onChange(vars)` fires after every edit. Returns { read, focusKey }.
+export function mountKvGrid(grid, entries = {}, onChange = () => {}, { keyPlaceholder = "name", valuePlaceholder = "value" } = {}) {
+    grid.innerHTML = "";
+
+    function read() {
+        const vars = {};
+        const cells = Array.from(grid.children);
+        for (let i = 0; i + 2 < cells.length; i += 3) {
+            const k = cells[i].value.trim();
+            if (k) vars[k] = cells[i + 1].value;
+        }
+        return vars;
+    }
+
+    function addRow(key, value) {
+        const k = document.createElement("input"); k.placeholder = keyPlaceholder; k.value = key; k.spellcheck = false;
+        const v = document.createElement("input"); v.placeholder = valuePlaceholder; v.value = value; v.spellcheck = false;
+        const del = document.createElement("button"); del.className = "kv-del"; del.type = "button"; del.textContent = "×"; del.title = "Remove";
+        const els = [k, v, del];
+        const isLast = () => grid.lastElementChild === del;
+        const onInput = () => { if (isLast() && (k.value || v.value)) addRow("", ""); onChange(read()); };
+        k.addEventListener("input", onInput);
+        v.addEventListener("input", onInput);
+        del.addEventListener("click", () => { if (isLast()) { k.value = ""; v.value = ""; } else els.forEach(el => el.remove()); onChange(read()); });
+        els.forEach(el => grid.appendChild(el));
+        return { k, v };
+    }
+
+    Object.entries(entries).forEach(([k, v]) => addRow(k, v));
+    addRow("", "");
+
+    // Add (or focus) a key and put the cursor in its value cell.
+    function focusKey(name) {
+        const cells = Array.from(grid.children);
+        for (let i = 0; i + 2 < cells.length; i += 3) {
+            if (cells[i].value.trim() === name) { cells[i + 1].focus(); return; }
+        }
+        const last = cells.length >= 3 ? cells[cells.length - 3] : null;
+        if (last && last.value.trim() === "") {
+            last.value = name;
+            addRow("", "");
+            onChange(read());
+            cells[cells.length - 2].focus();
+        } else {
+            const row = addRow(name, "");
+            addRow("", "");
+            onChange(read());
+            row.v.focus();
+        }
+    }
+
+    return { read, focusKey };
+}
+
 export function escapeHtml(s) {
     return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }

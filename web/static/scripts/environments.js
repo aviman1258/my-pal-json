@@ -40,6 +40,15 @@ export async function getActiveEnv() {
     return all.find(e => e.id === id) || null;
 }
 
+// Return the active environment, creating and activating one when there is none.
+export async function ensureActiveEnv(defaultName = "Secrets") {
+    const env = await getActiveEnv();
+    if (env) return env;
+    const id = await saveEnvironment({ name: defaultName, vars: {} });
+    await setActiveEnvId(id);
+    return { id, name: defaultName, vars: {} };
+}
+
 // The variable scope to substitute with: active environment vars, or {} when none.
 export async function activeScope() {
     const env = await getActiveEnv();

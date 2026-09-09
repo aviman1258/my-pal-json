@@ -1,11 +1,12 @@
 // Chain tab UI: chain picker, run bar, step cards, click-to-pick outputs, drafts and push.
 
-import { toast, showContextMenu, escapeHtml } from "../ui.js";
+import { toast, showContextMenu, escapeHtml, mountKvGrid } from "../ui.js";
 import { getSetting, setSetting } from "../db.js";
 import { createHeaderRow, readHeaders } from "../headers-management.js";
 import { makeSortable } from "../drag-reorder.js";
 import { renderJsonTree } from "../json-tree-view.js";
-import { activeScope, getActiveEnv, envEvents } from "../environments.js";
+import { activeScope, getActiveEnv, envEvents, ensureActiveEnv, saveEnvironment } from "../environments.js";
+import { createSecretAllocator, describeMoves } from "../secret-scrub.js";
 import { dataStore, sendRequest, formatContent } from "../send-request.js";
 import { openCollectionPicker } from "../collection-browser.js";
 import { openSettings } from "../settings-panel.js";
@@ -13,7 +14,7 @@ import * as store from "../collections-store.js";
 import { showView } from "../view-switch.js";
 import {
     newChain, newStep, normalizeChain, listDrafts, loadDraft, saveDraft, deleteDraft, scheduleSave, flushSave,
-    repoChains, importChainFile, pushChain, chainEvents, shortUrl
+    repoChains, importChainFile, pushChain, chainEvents, shortUrl, findSecretHits, scrubChainSecrets
 } from "./chain-store.js";
 import { runChain, staticUnresolved, usesOfOutput, renameReferences } from "./chain-runner.js";
 import { getPath, stringifyValue } from "../variables.js";
@@ -26,11 +27,44 @@ const state = {
     abort: null,
     picking: null,           // { stepId, source: "body"|"header" }
     expanded: new Set(),
-    envScope: {}
+    envScope: {},
+    varsGrid: null           // handle from mountKvGrid for the chain variables panel
 };
 
 const $ = (id) => document.getElementById(id);
 const stepsEl = () => $("chainSteps");
+
+// Everything a step can resolve before any step runs: environment, then chain variables.
+function baseScope() {
+    return { ...state.envScope, ...((state.chain && state.chain.variables) || {}) };
+}
+
+function renderVariablesPanel() {
+    const c = state.chain;
+    const panel = $("chainVarsPanel");
+    panel.hidden = !c;
+    if (!c) return;
+    state.varsGrid = mountKvGrid($("chainVarsGrid"), c.variables || {}, (vars) => {
+        c.variables = vars;
+        touch();
+        refreshUnresolved();
+        updateVarsSummary();
+    }, { keyPlaceholder: "variable", valuePlaceholder: "value" });
+    updateVarsSummary();
+}
+
+function updateVarsSummary() {
+    const n = Object.keys((state.chain && state.chain.variables) || {}).length;
+    $("chainVarsCount").textContent = n ? `(${n})` : "";
+}
+
+// From the yellow warning: add the variable to the chain and put the cursor on its value.
+function defineVariable(name) {
+    if (!state.chain || !state.varsGrid) return;
+    $("chainVarsPanel").open = true;
+    state.varsGrid.focusKey(name);
+    $("chainVarsPanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
 
 // ---------- chain selection ----------
 
@@ -102,11 +136,29 @@ async function pushCurrentChain() {
     const c = state.chain;
     if (!c) return;
     if (!store.getRepo()) { toast("Pick a repository first (Settings).", "warn"); return; }
+
+    // Literal secrets are moved into the active environment and replaced with {{placeholders}}
+    // so the chain keeps working here while the repo only ever sees the placeholder.
+    let moved = [];
+    if (findSecretHits(c).length) {
+        const env = await ensureActiveEnv(`${c.name} secrets`);
+        const allocator = createSecretAllocator(env.vars);
+        const preview = findSecretHits(c).map(h => `${h.where}: ${h.kind === "variable" ? "variable" : h.kind} ${h.key}`);
+        if (!confirm(`${preview.length} secret value${preview.length === 1 ? "" : "s"} will be moved into environment "${env.name}" and replaced with {{placeholders}} before pushing:\n\n${preview.join("\n")}\n\nThe chain keeps running here unchanged. Continue?`)) return;
+        scrubChainSecrets(c, allocator);
+        moved = allocator.moved;
+        await saveEnvironment({ ...env, vars: allocator.vars });
+        state.envScope = await activeScope();
+        renderSteps();
+        renderVariablesPanel();
+        touch();
+    }
+
     const message = prompt("Commit message:", `${c.repoPath ? "Update" : "Add"} chain ${c.name} via My Pal JSON`);
     if (!message) return;
     try {
         await pushChain(c, message);
-        toast(`Pushed ${c.repoPath}.`);
+        toast(moved.length ? `Pushed ${c.repoPath}. Moved to environment: ${describeMoves(moved).join(", ")}` : `Pushed ${c.repoPath}.`, "info", moved.length ? 9000 : 3500);
         render();
         refreshChainSelect();
     } catch (err) {
@@ -131,6 +183,7 @@ function render() {
     $("chainRunBtn").disabled = !c || !c.steps.length || state.running;
     $("chainAddStepBtn").hidden = !c;
     $("chainRepoPath").textContent = c && c.repoPath ? c.repoPath : (c ? "not pushed yet" : "");
+    renderVariablesPanel();
     renderSteps();
     updateRunStatus();
 }
@@ -392,16 +445,24 @@ function updateCard(stepId) {
 function refreshUnresolved() {
     const c = state.chain;
     if (!c) return;
+    const scope = baseScope();
     c.steps.forEach((step, i) => {
         const li = cardFor(step.id);
         if (!li) return;
-        const missing = staticUnresolved(c, i, state.envScope);
+        const missing = staticUnresolved(c, i, scope);
         const mark = (el, text) => el.classList.toggle("has-unresolved", missing.some(n => (text || "").includes(`{{${n}}}`)));
         mark(li.querySelector(".cs-url-input"), step.request.url);
         mark(li.querySelector(".cs-body-input"), step.request.body);
         li.querySelectorAll(".headers-grid .header-value, .headers-grid .header-key-input").forEach(inp => mark(inp, inp.value));
-        li.querySelector(".cs-unresolved-note").textContent = missing.length
-            ? `Unresolved before run: ${missing.map(n => `{{${n}}}`).join(", ")} (not in the environment or an earlier step's outputs)` : "";
+        const note = li.querySelector(".cs-unresolved-note");
+        if (missing.length) {
+            note.innerHTML = `Unresolved: ${missing.map(n =>
+                `<button type="button" class="define-var" data-name="${escapeHtml(n)}" title="Add {{${escapeHtml(n)}}} as a chain variable">{{${escapeHtml(n)}}}</button>`).join(" ")}
+                <span class="msg-muted">— click a name to define it as a chain variable, or set it in the environment / an earlier step's outputs</span>`;
+            note.querySelectorAll(".define-var").forEach(b => b.addEventListener("click", () => defineVariable(b.dataset.name)));
+        } else {
+            note.textContent = "";
+        }
         li.querySelector(".cs-url").classList.toggle("code-warn", missing.length > 0);
     });
 }
@@ -419,7 +480,7 @@ function updateRunStatus(text = null) {
 
 async function updateEnvLabel() {
     const env = await getActiveEnv();
-    $("chainEnvLabel").textContent = env ? `env: ${env.name}` : "no environment";
+    $("chainEnvLabel").textContent = env ? `env: ${env.name}` : "env: none (click to choose)";
     state.envScope = await activeScope();
     refreshUnresolved();
 }
@@ -563,7 +624,7 @@ async function run({ fromIndex = 0, onlyIndex = null } = {}) {
     if (fullRun) state.lastOutputs = {};
     try {
         const { outputs } = await runChain(c, {
-            envScope: state.envScope,
+            envScope: baseScope(),
             priorOutputs: fullRun ? {} : state.lastOutputs,
             fromIndex, onlyIndex,
             signal: state.abort.signal,
