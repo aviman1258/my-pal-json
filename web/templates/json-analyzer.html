@@ -5,140 +5,272 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Pal JSON</title>
     <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
-    <!-- Dark theme stylesheet loaded by default -->
-    <link id="themeStylesheet" rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <script>
+        // Apply the saved theme before first paint. Dark is the default.
+        try { document.documentElement.dataset.theme = localStorage.getItem('theme') === 'light' ? 'light' : 'dark'; }
+        catch (e) { document.documentElement.dataset.theme = 'dark'; }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/chain.css') }}">
 </head>
 <body>
     <header>
+        <button id="collectionsBtn" class="icon-button" title="Collections">
+            <img src="{{ url_for('static', filename='images/history.svg') }}" alt="Collections">
+        </button>
         <h1>My Pal JSON</h1>
+        <button id="settingsBtn" class="icon-button" title="Settings: repositories, tokens, environments">
+            <img src="{{ url_for('static', filename='images/settings.svg') }}" alt="Settings">
+        </button>
+        <button id="themeToggleBtn" class="icon-button"
+                data-sun-icon="{{ url_for('static', filename='images/sun.svg') }}"
+                data-moon-icon="{{ url_for('static', filename='images/moon.svg') }}"
+                title="Toggle Theme">
+            <img id="themeIcon" src="{{ url_for('static', filename='images/sun.svg') }}" alt="Toggle Theme">
+        </button>
     </header>
 
-    <button id="saveBtn" class="save-button" title="Save API Call">
-        <img id="saveIcon" src="{{ url_for('static', filename='images/save.svg') }}" alt="Save">
-    </button>
-    
-    <button id="historyBtn" class="history-button" title="Saved Requests">
-        <img id="historyIcon" src="{{ url_for('static', filename='images/history.svg') }}" alt="History">
-    </button>
+    <nav class="view-tabs">
+        <button id="viewRequestTab" class="view-tab active">Request</button>
+        <button id="viewChainTab" class="view-tab">Chain</button>
+    </nav>
 
-    <!-- API Request Bar -->
-    <div class="api-request-bar">
-        <select id="httpMethod" class="http-method-select">
-            <option value="GET">GET</option>
-            <option value="POST">POST</option>
-            <option value="PUT">PUT</option>
-        </select>
-        <input type="text" id="apiUrl" placeholder="Enter API Endpoint" class="api-url-input">
-        <button id="sendBtn" class="send-button">Send</button>
-    </div>
-
-    <button id="toggleHeadersBtn" class="toggle-headers-button" title="Toggle Headers">
-        <img id="toggleIcon" src="{{ url_for('static', filename='images/eye-slash.svg') }}" 
-        data-eye="{{ url_for('static', filename='images/eye.svg') }}"
-        data-eye-slash="{{ url_for('static', filename='images/eye-slash.svg') }}"
-        alt="Toggle Headers">
-    </button>
-
-    <div id="isAuthLbl" class="is-auth-label">IsAuth</div>
-
-    <!-- Headers Grid Section -->
-    <div class="headers-section">
-        <div class="headers-grid" id="headersGrid">
-            <!-- Dynamic rows for header key-value pairs will be added here by JavaScript -->
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="left">
-            <div class="tabs-container">
-                <button id="requestTab" class="tab active">Request</button>
-                <button id="responseTab" class="tab">Response</button>
-            </div>
-            <textarea id="inputJson" placeholder="Drag and drop or type JSON body here"></textarea>
-        </div>
-        <div class="middle">
-            <button id="prettyBtn">Pretty</button>
-            <button id="analyzeBtn">Analyze</button>
-            <button id="modelBtn">Model</button>
-
-            <select id="languageSelect" class="language-select">
-                <option value="csharp">C#</option>
-                <option value="python">Python</option>
-                <option value="javascript">Javascript</option>
-                <option value="cplusplus">C++</option>
-                <option value="java">Java</option>
-                <option value="go">Go</option>
+    <section id="requestView">
+        <!-- API Request Bar -->
+        <div class="api-request-bar">
+            <select id="httpMethod" class="http-method-select">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="PATCH">PATCH</option>
+                <option value="DELETE">DELETE</option>
+                <option value="HEAD">HEAD</option>
+                <option value="OPTIONS">OPTIONS</option>
             </select>
+            <input type="text" id="apiUrl" placeholder="Enter API endpoint, {{ '{{variables}}' }} allowed" class="api-url-input" spellcheck="false">
+            <select id="envSelect" class="env-select" title="Active environment for {{ '{{variables}}' }}"></select>
+            <label class="tls-check" title="Skip TLS certificate verification (self-signed localhost certs)">
+                <input type="checkbox" id="skipTlsCheck"> skip TLS
+            </label>
+            <button id="saveRequestBtn" class="btn-small" title="Save into the loaded collection request (Ctrl+S)">Save</button>
+            <button id="saveAsBtn" class="btn-small" title="Save as a new request in a collection">Save as…</button>
+            <button id="sendBtn" class="send-button">Send</button>
         </div>
-        <div class="right">
-            <!-- Refresh Button -->
-            <button id="refreshBtn" class="refresh-button" title="Refresh">
-                <img src="{{ url_for('static', filename='images/refresh.svg') }}" alt="Refresh" class="refresh-icon">
-            </button>
-            <button id="themeToggleBtn" class="theme-toggle"
-                    data-lightstyle-url="{{ url_for('static', filename='styles/lightstyle.css') }}"
-                    data-darkstyle-url="{{ url_for('static', filename='styles/style.css') }}"
-                    data-sun-icon="{{ url_for('static', filename='images/sun.svg') }}"
-                    data-moon-icon="{{ url_for('static', filename='images/moon.svg') }}"
-                    title="Toggle Theme">
-                <img id="themeIcon" src="{{ url_for('static', filename='images/sun.svg') }}" alt="Toggle Theme">
-            </button>
-            <div class="output-container">
-                <textarea id="outputBox" placeholder="Analyzed output will be displayed here" readonly></textarea>
-                <button id="copyBtn" class="copy-button" title="Copy">
-                    <img src="{{ url_for('static', filename='images/copy.svg') }}" alt="Copy" class="copy-icon">
-                </button>
+
+        <button id="toggleHeadersBtn" class="toggle-headers-button" title="Toggle Headers">
+            <img id="toggleIcon" src="{{ url_for('static', filename='images/eye-slash.svg') }}"
+                 data-eye="{{ url_for('static', filename='images/eye.svg') }}"
+                 data-eye-slash="{{ url_for('static', filename='images/eye-slash.svg') }}"
+                 alt="Toggle Headers">
+        </button>
+
+        <div id="isAuthLbl" class="is-auth-label">IsAuth</div>
+
+        <div class="headers-section">
+            <div class="headers-grid" id="headersGrid"></div>
+        </div>
+
+        <div class="container">
+            <div class="left">
+                <div class="tabs-container">
+                    <button id="requestTab" class="tab active">Request</button>
+                    <button id="responseTab" class="tab">Response</button>
+                    <span id="requestName" class="request-name"></span>
+                </div>
+                <div id="responseStatus" class="response-status"></div>
+                <textarea id="inputJson" placeholder="Drag and drop or type JSON body here" spellcheck="false"></textarea>
+            </div>
+            <div class="middle">
+                <button id="prettyBtn">Pretty</button>
+                <button id="analyzeBtn">Analyze</button>
+                <button id="modelBtn">Model</button>
+                <button id="sendToChainBtn" class="secondary" title="Add this request as a step in the open chain">→ Chain</button>
+                <select id="languageSelect" class="language-select">
+                    <option value="csharp">C#</option>
+                    <option value="python">Python</option>
+                    <option value="javascript">Javascript</option>
+                    <option value="cplusplus">C++</option>
+                    <option value="java">Java</option>
+                    <option value="go">Go</option>
+                </select>
+            </div>
+            <div class="right">
+                <div class="output-container">
+                    <textarea id="outputBox" placeholder="Analyzed output will be displayed here" readonly></textarea>
+                    <button id="copyBtn" class="copy-button" title="Copy">
+                        <img src="{{ url_for('static', filename='images/copy.svg') }}" alt="Copy" class="copy-icon">
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Modal for API Call History -->
-    <div id="historyModal" class="modal">
+    <!-- Chain view -->
+    <section id="chainView" hidden>
+        <div class="chain-toolbar">
+            <select id="chainSelect" title="Chains: local drafts and files in the repository"></select>
+            <input type="text" id="chainName" placeholder="Chain name" disabled>
+            <span id="chainRepoPath" class="msg-muted"></span>
+            <button id="chainNewBtn" class="btn-small">New</button>
+            <button id="chainPushBtn" class="btn-small primary" disabled title="Commit this chain as a *.mypaljson_chain.json file">Push to repo</button>
+            <button id="chainDeleteBtn" class="btn-small danger" disabled>Delete</button>
+        </div>
+        <div class="chain-runbar">
+            <button id="chainRunBtn" class="send-button" disabled>▶ Run chain</button>
+            <button id="chainStopBtn" class="btn-small danger" hidden>■ Stop</button>
+            <span id="chainEnvLabel" class="chain-env-label" title="Variables come from the active environment; click to change"></span>
+            <span class="spacer"></span>
+            <span id="chainRunStatus"></span>
+        </div>
+        <ol id="chainSteps" class="chain-steps"></ol>
+        <button id="chainAddStepBtn" class="chain-add-step" hidden>+ Add step</button>
+    </section>
+
+    <!-- Collections drawer -->
+    <aside id="collectionsDrawer">
+        <div class="drawer-header">
+            <select id="repoSelect" title="Repository"></select>
+            <select id="branchSelect" title="Branch"></select>
+            <button id="pullBtn" class="btn-small" title="Fetch collections from the repository">Pull</button>
+            <button id="pushBtn" class="btn-small primary" title="Commit changed files" disabled>Push<span id="dirtyBadge" class="badge"></span></button>
+            <button id="newCollectionBtn" class="btn-small" title="New collection file">+</button>
+            <button id="drawerSettingsBtn" class="btn-small" title="Repositories &amp; tokens">⚙</button>
+            <span id="closeDrawer" class="close" title="Close">&times;</span>
+        </div>
+        <div id="pickBanner" class="drawer-footer" hidden>
+            Pick a request for the chain… <button id="cancelPickBtn" class="btn-small">Cancel</button>
+        </div>
+        <div id="collectionTree"></div>
+        <div class="drawer-footer">Right-click or ⋯ on a row for actions. Changes stay local until you Push.</div>
+    </aside>
+
+    <!-- Settings modal -->
+    <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <span id="closeModal" class="close">&times;</span>
-            <h2>API Call History</h2>
-            <div id="historyList" class="history-list">
-                <!-- JavaScript will populate this area with API call history -->
+            <span class="close" data-close title="Close">&times;</span>
+            <h2>Settings</h2>
+            <div class="settings-tabs">
+                <button data-pane="repos" class="active">Repositories</button>
+                <button data-pane="envs">Environments</button>
+                <button data-pane="general">General</button>
             </div>
-        </div>
 
-        <!-- Delete Confirmation Dialog -->
-        <div id="deleteConfirmDialog" class="confirm-dialog" style="display: none;">
-            <p>Are you sure you want to delete this record?</p>
-            <button id="confirmDeleteBtn">Yes</button>
-            <button id="cancelDeleteBtn">No</button>
+            <div class="settings-pane" data-pane="repos">
+                <div id="repoList" class="list-rows"></div>
+                <h3>Add or edit a repository</h3>
+                <div class="field">
+                    <label for="repoUrlInput">Repository URL (Azure DevOps or GitHub)</label>
+                    <input id="repoUrlInput" type="url" placeholder="https://dev.azure.com/org/project/_git/repo" spellcheck="false">
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label for="repoTokenInput">Personal Access Token (stays in this browser)</label>
+                        <input id="repoTokenInput" type="password" placeholder="ADO: Code (Read &amp; Write) · GitHub: Contents read/write" autocomplete="off">
+                    </div>
+                    <div class="field">
+                        <label for="repoBranchInput">Branch</label>
+                        <select id="repoBranchInput"></select>
+                    </div>
+                </div>
+                <div id="repoTestMsg" class="msg-muted"></div>
+                <div class="modal-buttons">
+                    <button id="repoClearBtn" class="btn-small">Clear</button>
+                    <button id="repoTestBtn" class="btn-small">Test connection</button>
+                    <button id="repoSaveBtn" class="btn-small primary">Save repository</button>
+                </div>
+            </div>
+
+            <div class="settings-pane" data-pane="envs" hidden>
+                <div id="envList" class="list-rows"></div>
+                <div class="modal-buttons" style="justify-content: flex-start; margin-top: 0;">
+                    <button id="envNewBtn" class="btn-small">New environment</button>
+                    <label class="btn-small" style="display:inline-flex;align-items:center;cursor:pointer;">Import Postman environment
+                        <input id="envImportInput" type="file" accept=".json,application/json" hidden>
+                    </label>
+                </div>
+                <h3 id="envFormTitle">New environment</h3>
+                <div class="field">
+                    <label for="envNameInput">Name</label>
+                    <input id="envNameInput" type="text" placeholder="e.g. TU Sandbox">
+                </div>
+                <div id="envVarsGrid" class="kv-grid"></div>
+                <div class="modal-buttons">
+                    <button id="envSaveBtn" class="btn-small primary">Save environment</button>
+                </div>
+            </div>
+
+            <div class="settings-pane" data-pane="general" hidden>
+                <label class="tls-check" style="font-size: 0.95rem; color: var(--fg);">
+                    <input type="checkbox" id="verifyTlsDefault" checked> Verify TLS certificates by default
+                </label>
+                <p class="msg-muted">Uncheck when you mostly test local APIs with self-signed certificates. You can still flip it per request in the request bar.</p>
+                <p class="msg-muted">Tokens and environments live only in this browser's IndexedDB. Nothing is stored on the server or in the container.</p>
+            </div>
         </div>
     </div>
 
-    <!-- Naming Modal for Save -->
-    <div id="saveNameModal" class="modal" style="display: none;">
-        <div class="save-modal-content">
-            <span id="closeSaveModal" class="close">&times;</span>
-            <h2>Name Your API Call</h2>
-            <input type="text" id="apiCallName" placeholder="Enter name for API call">
+    <!-- Save As modal -->
+    <div id="saveAsModal" class="modal">
+        <div class="modal-content" style="width: min(480px, 90%);">
+            <span class="close" data-close title="Close">&times;</span>
+            <h2>Save request as</h2>
+            <div class="field">
+                <label for="saveAsCollection">Collection</label>
+                <select id="saveAsCollection"></select>
+            </div>
+            <div class="field" hidden>
+                <label for="saveAsNewName">New collection name</label>
+                <input id="saveAsNewName" type="text" placeholder="e.g. Leads">
+            </div>
+            <div class="field">
+                <label for="saveAsFolder">Folder</label>
+                <select id="saveAsFolder"></select>
+            </div>
+            <div class="field">
+                <label for="saveAsName">Request name</label>
+                <input id="saveAsName" type="text" placeholder="e.g. Lead-Validate-Local">
+            </div>
             <div class="modal-buttons">
-                <button id="confirmSaveBtn">Save</button>
-                <button id="cancelSaveBtn">Cancel</button>
+                <button class="btn-small" data-close>Cancel</button>
+                <button id="confirmSaveAsBtn" class="btn-small primary">Save</button>
             </div>
         </div>
     </div>
 
+    <!-- Push modal -->
+    <div id="pushModal" class="modal">
+        <div class="modal-content" style="width: min(560px, 90%);">
+            <span class="close" data-close title="Close">&times;</span>
+            <h2>Push changes</h2>
+            <div id="pushList" class="push-list"></div>
+            <div class="field">
+                <label for="commitMessage">Commit message</label>
+                <input id="commitMessage" type="text">
+            </div>
+            <div id="scrubSummary" class="scrub-summary"></div>
+            <div id="pushResult" class="msg-muted"></div>
+            <div class="modal-buttons">
+                <button class="btn-small" data-close>Cancel</button>
+                <button id="confirmPushBtn" class="btn-small primary">Commit &amp; push</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" hidden></div>
 
     <script src="{{ url_for('static', filename='scripts/validate-json.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/model-json.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/theme-toggle.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/copy-output.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='scripts/headers-management.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/headers-toggle.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='scripts/send-request.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='scripts/tab-switch.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/input-drop.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/make-pretty.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/open-database.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='scripts/save-call.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='scripts/history-modal.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='scripts/delete-record.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='scripts/save-modal.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/refresh-page.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/headers-management.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/send-request.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/tab-switch.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/settings-panel.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/collection-browser.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/view-switch.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/chain/chain-view.js') }}"></script>
 </body>
 </html>

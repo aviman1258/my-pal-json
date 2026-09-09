@@ -1,85 +1,90 @@
-// Function to create a new header row with a checkbox, key, and value
-export function createHeaderRow(key = '', value = '', isAuth = false) {
-    const headersGrid = document.getElementById('headersGrid');
+// Header grid: rows of [auth checkbox | key | value]. The grid auto-adds an empty
+// trailing row while you type and removes rows that become empty.
+// Every function takes the grid element so the same code serves the main form
+// and each chain step card.
 
-    // Create checkbox for Auth
-    const headerAuthDiv = document.createElement('div');
-    const headerAuthCheckbox = document.createElement('input');
-    headerAuthCheckbox.type = 'checkbox';
-    headerAuthCheckbox.classList.add('auth-checkbox');
-    headerAuthCheckbox.checked = isAuth;
+export function createHeaderRow(key = '', value = '', isAuth = false, gridEl = document.getElementById('headersGrid')) {
+    const authDiv = document.createElement('div');
+    const authCheckbox = document.createElement('input');
+    authCheckbox.type = 'checkbox';
+    authCheckbox.classList.add('auth-checkbox');
+    authCheckbox.title = 'Auth header: sent as "Bearer <value>" and never written to the repo as a literal';
+    authCheckbox.checked = isAuth;
 
-    // Create header key input
-    const headerKeyDiv = document.createElement('div');
-    const headerKeyInput = document.createElement('input');
-    headerKeyInput.type = 'text';
-    headerKeyInput.classList.add('header-key-input');
-    headerKeyInput.placeholder = 'Key'; // Placeholder for new row
-    headerKeyInput.value = key;
+    const keyDiv = document.createElement('div');
+    const keyInput = document.createElement('input');
+    keyInput.type = 'text';
+    keyInput.classList.add('header-key-input');
+    keyInput.placeholder = 'Key';
+    keyInput.value = key;
 
-    // Create header value input
-    const headerValueInput = document.createElement('input');
-    headerValueInput.type = 'text';
-    headerValueInput.classList.add('header-value');
-    headerValueInput.placeholder = key === 'Authorization' ? 'Bearer Token' : 'Value';
-    headerValueInput.value = value;
+    const valueInput = document.createElement('input');
+    valueInput.type = 'text';
+    valueInput.classList.add('header-value');
+    valueInput.placeholder = key === 'Authorization' ? 'Bearer Token' : 'Value';
+    valueInput.value = value;
 
-    // Append the elements to the grid
-    headerAuthDiv.appendChild(headerAuthCheckbox);
-    headersGrid.appendChild(headerAuthDiv);
-    headerKeyDiv.appendChild(headerKeyInput);
-    headersGrid.appendChild(headerKeyDiv);
-    headersGrid.appendChild(headerValueInput);
+    authDiv.appendChild(authCheckbox);
+    keyDiv.appendChild(keyInput);
+    gridEl.appendChild(authDiv);
+    gridEl.appendChild(keyDiv);
+    gridEl.appendChild(valueInput);
 
-    // Attach input listeners to handle dynamic row addition and deletion
-    addInputListeners(headerAuthCheckbox, headerKeyInput, headerValueInput);
+    addInputListeners(authCheckbox, keyInput, valueInput, gridEl);
+    return { authCheckbox, keyInput, valueInput };
 }
 
-// Function to handle adding/removing rows dynamically
-export function addInputListeners(authCheckbox, keyInput, valueInput) {
+export function addInputListeners(authCheckbox, keyInput, valueInput, gridEl) {
     function checkRowStatus() {
-        const isLastRow = isLastRowInGrid(keyInput);
-
-        if (isLastRow && (keyInput.value.trim() !== '' || valueInput.value.trim() !== '')) {
-            // If the user starts typing in the last row, create a new empty row
-            createHeaderRow();
+        if (isLastRowInGrid(keyInput, gridEl) && (keyInput.value.trim() !== '' || valueInput.value.trim() !== '')) {
+            createHeaderRow('', '', false, gridEl);
         }
-
-        // If both key and value are empty, remove the row (except the last row)
-        if (isEmptyRow(keyInput, valueInput) && !isLastRowInGrid(keyInput)) {
+        if (isEmptyRow(keyInput, valueInput) && !isLastRowInGrid(keyInput, gridEl)) {
             authCheckbox.parentElement.remove();
             keyInput.parentElement.remove();
             valueInput.remove();
+            gridEl.dispatchEvent(new Event('change', { bubbles: true }));
         }
     }
-
     keyInput.addEventListener('input', checkRowStatus);
     valueInput.addEventListener('input', checkRowStatus);
 }
 
-// Function to check if the current row is empty
 export function isEmptyRow(keyInput, valueInput) {
     return keyInput.value.trim() === '' && valueInput.value.trim() === '';
 }
 
-// Function to check if the row is the last one in the grid
-export function isLastRowInGrid(inputElement) {
-    const rows = document.querySelectorAll('.header-key-input');
-    const lastKeyInput = rows[rows.length - 1];
-    return inputElement === lastKeyInput;
+export function isLastRowInGrid(inputElement, gridEl = document.getElementById('headersGrid')) {
+    const rows = gridEl.querySelectorAll('.header-key-input');
+    return inputElement === rows[rows.length - 1];
 }
 
-// Initialize header rows on DOMContentLoaded
-document.addEventListener("DOMContentLoaded", function() {
-    const defaultHeaders = [
-        { key: 'Content-Type', value: 'application/json', isAuth: false },
-        { key: 'Authorization', value: '', isAuth: true },
-        { key: 'Accept', value: '*/*', isAuth: false }
-    ];
+// Read the grid as [{ name, value, isAuth }], skipping rows with an empty key.
+export function readHeaders(gridEl = document.getElementById('headersGrid')) {
+    const headers = [];
+    const cells = gridEl.children;
+    for (let i = 0; i + 2 < cells.length; i += 3) {
+        const isAuth = cells[i].querySelector('.auth-checkbox').checked;
+        const name = cells[i + 1].querySelector('.header-key-input').value.trim();
+        const value = cells[i + 2].value.trim();
+        if (name !== '') headers.push({ name, value, isAuth });
+    }
+    return headers;
+}
 
-    // Create default headers with checkboxes
-    defaultHeaders.forEach(header => createHeaderRow(header.key, header.value, header.isAuth));
+// Replace the grid contents with the given headers plus one empty trailing row.
+export function setHeaders(headers, gridEl = document.getElementById('headersGrid')) {
+    gridEl.innerHTML = '';
+    (headers || []).forEach(h => createHeaderRow(h.name, h.value, !!h.isAuth, gridEl));
+    createHeaderRow('', '', false, gridEl);
+}
 
-    // Initialize with one empty row at the bottom
-    createHeaderRow(); // This row will have placeholders "Key" and "Value"
+export const DEFAULT_HEADERS = [
+    { name: 'Content-Type', value: 'application/json', isAuth: false },
+    { name: 'Authorization', value: '', isAuth: true },
+    { name: 'Accept', value: '*/*', isAuth: false }
+];
+
+document.addEventListener("DOMContentLoaded", function () {
+    setHeaders(DEFAULT_HEADERS);
 });
