@@ -7,6 +7,70 @@ A local API client that lives in your browser and keeps its collections in your 
 - **Chain requests visually.** Stack requests top to bottom, click a value in one response to turn it into a `{{variable}}` for the next step, run the whole chain or from any point.
 - Runs entirely on your machine (Podman, Docker, or plain Python), so `localhost` APIs, VPN-only hosts and secrets never leave it.
 
+## Quick start (Windows, PowerShell)
+
+Copy and paste each block into PowerShell. You need [Podman](https://podman-desktop.io/) installed, nothing else.
+
+**1. Wake up Podman** (says "already running" if it is, that's fine):
+
+```powershell
+podman machine start
+```
+
+**2. Get the app.** Pick one.
+
+Easiest, no code needed:
+
+```powershell
+podman pull docker.io/achandra1258/my-pal-json:2.0
+```
+
+Or build it from the code:
+
+```powershell
+git clone https://github.com/aviman1258/my-pal-json.git
+cd my-pal-json
+podman build --build-arg PIP_EXTRA_ARGS="--trusted-host pypi.org --trusted-host files.pythonhosted.org" -t docker.io/achandra1258/my-pal-json:2.0 .
+```
+
+(The long `--build-arg` is only needed on a work network that inspects HTTPS. It's harmless elsewhere.)
+
+**3. Start it:**
+
+```powershell
+podman run --name my-pal-json -d -p 127.0.0.1:5000:5000 docker.io/achandra1258/my-pal-json:2.0
+```
+
+**4. Open it:** <http://localhost:5000>
+
+That's it. Day to day:
+
+```powershell
+podman stop my-pal-json      # stop
+podman start my-pal-json     # start again
+podman ps                    # is it running?
+podman rm -f my-pal-json     # remove completely
+```
+
+**Upgrading** to a newer version:
+
+```powershell
+podman rm -f my-pal-json
+podman pull docker.io/achandra1258/my-pal-json:2.0
+podman run --name my-pal-json -d -p 127.0.0.1:5000:5000 docker.io/achandra1258/my-pal-json:2.0
+```
+
+**Need to call an API running on your own laptop** (`localhost:44300` and friends)? On Windows the container can't see those, so run the app directly instead. Python 3.10+ required:
+
+```powershell
+git clone https://github.com/aviman1258/my-pal-json.git
+cd my-pal-json
+pip install -r web\requirements.txt
+python -m web.app
+```
+
+The browser opens by itself. `Ctrl+C` stops it. Details on why, and what works on Linux and macOS, are under **Run it** below.
+
 ## Run it
 
 ### With Podman (or Docker)
@@ -125,6 +189,16 @@ Chain file format (`schemaVersion: 1`):
 pip install -r web/requirements.txt
 MPJ_OPEN_BROWSER=0 python -m web.app          # http://127.0.0.1:5000
 podman build -t docker.io/achandra1258/my-pal-json:2.0 .
+```
+
+Publishing a new image so others can `podman pull` it:
+
+```powershell
+podman login docker.io
+podman build --build-arg PIP_EXTRA_ARGS="--trusted-host pypi.org --trusted-host files.pythonhosted.org" -t docker.io/achandra1258/my-pal-json:2.0 .
+podman tag docker.io/achandra1258/my-pal-json:2.0 docker.io/achandra1258/my-pal-json:latest
+podman push docker.io/achandra1258/my-pal-json:2.0
+podman push docker.io/achandra1258/my-pal-json:latest
 ```
 
 Layout: `web/app.py` (Flask), `web/proxy.py` (outbound requests), `web/repo.py` + `web/providers/` (Azure DevOps and GitHub file access), `web/analyze.py` and `web/model.py` + `web/generators/` (tree and class generation), `web/static/scripts/` (vanilla ES modules, no build step), `web/static/styles/style.css` (theme tokens on `:root` and `[data-theme="light"]`).
