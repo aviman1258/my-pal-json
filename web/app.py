@@ -11,11 +11,14 @@ try:
 except ImportError:  # pragma: no cover
     pass
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_cors import CORS
+from markupsafe import escape
 
 from .analyze import analyze_bp
+from .auth_sources import msal_complete_login
 from .model import model_bp
+from .providers.base import RepoError
 from .proxy import proxy_bp
 from .repo import repo_bp
 
@@ -28,8 +31,21 @@ app.register_blueprint(proxy_bp)
 app.register_blueprint(repo_bp)
 
 
+_POPUP_PAGE = """<!doctype html><meta charset="utf-8"><title>My Pal JSON sign-in</title>
+<body style="font-family:sans-serif;background:#1f1f1f;color:#e0e0e0;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
+<div style="text-align:center"><h2 style="color:{color}">{title}</h2><p>{detail}</p><p style="color:#9e9e9e">You can close this window.</p></div>
+<script>setTimeout(function(){{ window.close(); }}, 1500);</script></body>"""
+
+
 @app.route('/')
 def serve_html():
+    # Microsoft sign-in redirects back here (redirect URI must be the app root on localhost).
+    if request.args.get("state") and (request.args.get("code") or request.args.get("error")):
+        try:
+            user = msal_complete_login(request.args.to_dict())
+            return _POPUP_PAGE.format(color="#4caf50", title="Signed in", detail=f"as {escape(user)}")
+        except RepoError as exc:
+            return _POPUP_PAGE.format(color="#f44336", title="Sign-in failed", detail=escape(exc.message)), exc.status
     return render_template('json-analyzer.html')
 
 

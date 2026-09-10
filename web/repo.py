@@ -4,23 +4,31 @@ from typing import Tuple
 import requests
 from flask import Blueprint, jsonify, request
 
+from urllib.parse import urlsplit
+
+from .auth_sources import describe_sources, msal_account, msal_logout, msal_start_login, resolve_token
 from .providers import BaseProvider, RepoError, get_provider, parse_repo_url
 
 repo_bp = Blueprint("repo_bp", __name__, url_prefix="/repo")
 
 TOKEN_HEADER = "X-Repo-Token"
+AUTH_HEADER = "X-Repo-Auth"     # pat (default) | azcli | gcm
 
 
-def _context() -> Tuple[BaseProvider, str]:
-    """Build a provider from the request and resolve the branch."""
-    token = request.headers.get(TOKEN_HEADER, "").strip()
-    if not token:
-        raise RepoError(401, f"Missing {TOKEN_HEADER} header")
+def _provider() -> BaseProvider:
+    """Parse the repo URL and build a provider with a token from the requested source."""
     try:
         ref = parse_repo_url(request.args.get("repo", ""))
     except ValueError as exc:
         raise RepoError(400, str(exc))
-    provider = get_provider(ref, token)
+    source = request.headers.get(AUTH_HEADER, "pat").strip().lower()
+    token, scheme = resolve_token(source, request.headers.get(TOKEN_HEADER, "").strip(), ref)
+    return get_provider(ref, token, scheme)
+
+
+def _context() -> Tuple[BaseProvider, str]:
+    """Build a provider from the request and resolve the branch."""
+    provider = _provider()
     branch = request.args.get("branch", "").strip() or provider.ping()["default_branch"]
     return provider, branch
 
@@ -49,21 +57,45 @@ def _network_error(exc: requests.RequestException):
     return jsonify({"error": f"Could not reach the repo host: {exc.__class__.__name__}"}), 502
 
 
+@repo_bp.route("/auth-sources", methods=["GET"])
+def auth_sources():
+    """Which sign-in methods this machine supports (PAT, Microsoft sign-in, Azure CLI, Git Credential Manager)."""
+    return jsonify(describe_sources())
+
+
+def _login_redirect_uri() -> str:
+    """Always http://localhost:<port>/ : Entra accepts any localhost port for this public client,
+    and the app's root route completes the flow."""
+    port = urlsplit(request.host_url).port or (443 if request.is_secure else 80)
+    return f"http://localhost:{port}/" if port not in (80,) else "http://localhost/"
+
+
+@repo_bp.route("/auth/login", methods=["GET"])
+def auth_login():
+    """Start the Microsoft browser sign-in; the UI opens the returned URL in a popup."""
+    return jsonify({"url": msal_start_login(_login_redirect_uri())})
+
+
+@repo_bp.route("/auth/status", methods=["GET"])
+def auth_status():
+    return jsonify({"account": msal_account()})
+
+
+@repo_bp.route("/auth/logout", methods=["POST"])
+def auth_logout():
+    msal_logout()
+    return jsonify({"account": None})
+
+
 @repo_bp.route("/ping", methods=["GET"])
 def ping():
     """Validate the token and describe the repo."""
-    token = request.headers.get(TOKEN_HEADER, "").strip()
-    if not token:
-        raise RepoError(401, f"Missing {TOKEN_HEADER} header")
-    try:
-        ref = parse_repo_url(request.args.get("repo", ""))
-    except ValueError as exc:
-        raise RepoError(400, str(exc))
-    provider = get_provider(ref, token)
+    provider = _provider()
     info = provider.ping()
     return jsonify({
-        "provider": ref.provider,
-        "repo": ref.to_dict(),
+        "provider": provider.ref.provider,
+        "repo": provider.ref.to_dict(),
+        "auth": request.headers.get(AUTH_HEADER, "pat").strip().lower(),
         "name": info["name"],
         "default_branch": info["default_branch"],
         "branches": provider.list_branches(),

@@ -25,14 +25,14 @@ def parse_repo_url(url: str) -> RepoRef:
     )
 
 
-def get_provider(ref: RepoRef, token: str) -> BaseProvider:
-    """Instantiate the provider matching ref.provider."""
+def get_provider(ref: RepoRef, token: str, scheme: str = "basic") -> BaseProvider:
+    """Instantiate the provider matching ref.provider. scheme: 'basic' (PAT) or 'bearer'."""
     if ref.provider == "ado":
         from .azure_devops import AzureDevOpsProvider
-        return AzureDevOpsProvider(ref, token)
+        return AzureDevOpsProvider(ref, token, scheme)
     if ref.provider == "github":
         from .github import GitHubProvider
-        return GitHubProvider(ref, token)
+        return GitHubProvider(ref, token)   # GitHub always sends the token as Bearer
     raise ValueError(f"Unknown provider '{ref.provider}'")
 
 

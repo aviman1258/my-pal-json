@@ -61,6 +61,9 @@
     --overlay: rgba(0, 0, 0, 0.35);
 }
 
+/* The hidden attribute must win over any display rule below (e.g. .field { display: flex }). */
+[hidden] { display: none !important; }
+
 /* ---------- Base layout ---------- */
 body, html {
     margin: 0;

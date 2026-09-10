@@ -138,8 +138,14 @@ The browser opens automatically. Set `MPJ_OPEN_BROWSER=0` to suppress that, `POR
 Open **Settings** (gear icon) → **Repositories**.
 
 1. Paste the repo URL, e.g. `https://dev.azure.com/org/project/_git/repo` or `https://github.com/owner/repo`.
-2. Paste a Personal Access Token and **Test connection**. Scopes: Azure DevOps **Code (Read & Write)**; GitHub fine-grained **Contents: Read and write** on that repo.
-3. Save. The token is stored only in your browser's IndexedDB on `localhost` and is sent to the local Flask process with each repo call; it never goes anywhere else and is not stored in the container.
+2. Pick how to sign in, then **Test connection**:
+   - **Microsoft sign-in (browser)**, the default for Azure DevOps and the answer when your org has switched off PAT creation. Click **Sign in with Microsoft**, approve in the popup, done. The app then fetches short-lived Azure DevOps tokens as needed and keeps the sign-in on its side (a small cache file under `~/.my-pal-json`, or `MPJ_DATA_DIR`). Works from source **and from the container**: the popup redirects to `http://localhost:5000/`, which is mapped into the container. It uses the same public Microsoft client and the same browser flow as `az login`, so any tenant that allows `az login` allows this. (The "device code" flow is a different thing and is often blocked by Conditional Access; this app doesn't use it.)
+   - **Azure CLI**. Uses the `az login` session already on your machine. Needs the [Azure CLI](https://aka.ms/azcli) installed and signed in; from source only.
+   - **Git Credential Manager**. Reuses the sign-in your `git push` already uses for that host; from source only. If it has nothing stored yet, run `git fetch` on a clone of the repo once.
+   - **Personal Access Token**. Scopes: Azure DevOps **Code (Read & Write)**; GitHub fine-grained **Contents: Read and write** on that repo. The only option for GitHub.
+3. Save. A PAT is stored only in your browser's IndexedDB on `localhost` and is sent to the local Flask process with each repo call. With the other methods the browser sends nothing; the local app obtains a token itself each time it needs one.
+
+To keep the Microsoft sign-in across container restarts, mount a volume for the cache: `-v mpj-data:/data` (the image sets `MPJ_DATA_DIR=/data`).
 
 Then open the **Collections** drawer (top-left icon):
 
@@ -156,9 +162,9 @@ Everything the app doesn't understand in a collection (pre-request scripts, test
 
 ### Chain tab
 
-A chain runs requests in order and passes values between them.
+A chain runs requests in order and passes values between them. The tab opens on a list of your chains (local drafts and any found in the repository); open one or start a new one from there. **← All chains** brings you back.
 
-1. **New** chain, then **+ Add step**: from a collection, from the Request tab, or blank.
+1. **+ New chain**, then **+ Add step**: from a collection, from the Request tab, or blank.
 2. Expand a step. Run it once with ▶. In the response, **+ pick from response** and click any value: its JSON path (e.g. `$.data[0].id`) becomes a named output. **+ pick header** does the same for a response header. **+ manual** lets you type a path.
 3. Use the output as `{{name}}` in any later step. Numbers insert unquoted, so `"id": {{userId}}` gives `"id": 7`; wrap text in quotes yourself. Inputs that reference a variable nothing provides are outlined in yellow before you even run; click the name in the warning to define it on the spot.
    Values can come from three places, later ones win: the active **environment** (secrets, per-machine values), **chain variables** (the panel above the steps: test ids and other values that should travel with the chain file), and **outputs** of earlier steps.

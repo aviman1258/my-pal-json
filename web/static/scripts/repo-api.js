@@ -20,13 +20,17 @@ function qs(repo, extra = {}) {
     return params.toString();
 }
 
+// repo.auth: "pat" (default, token sent from the browser), "azcli" or "gcm" (Flask gets the token
+// from the Azure CLI / Git Credential Manager on this machine; nothing is sent from the browser).
 async function call(repo, method, path, body) {
     if (!repo || !repo.url) throw new RepoApiError(400, "No repository selected.");
-    if (!repo.token) throw new RepoApiError(401, "No token saved for this repository. Add one in Settings.");
+    const auth = repo.auth || "pat";
+    if (auth === "pat" && !repo.token) throw new RepoApiError(401, "No token saved for this repository. Add one in Settings.");
     const res = await fetch(path, {
         method,
         headers: {
-            "X-Repo-Token": repo.token,
+            "X-Repo-Auth": auth,
+            ...(auth === "pat" ? { "X-Repo-Token": repo.token } : {}),
             ...(body !== undefined ? { "Content-Type": "application/json" } : {})
         },
         body: body !== undefined ? JSON.stringify(body) : undefined
@@ -39,6 +43,41 @@ async function call(repo, method, path, body) {
         throw new RepoApiError(res.status, msg);
     }
     return data;
+}
+
+// → { in_container, pat: {available}, msal: {available, account}, azcli: {available, account}, gcm: {available} }
+export async function authSources() {
+    const res = await fetch("/repo/auth-sources");
+    return res.ok ? res.json() : { pat: { available: true }, msal: { available: false }, azcli: { available: false }, gcm: { available: false } };
+}
+
+// Microsoft browser sign-in (auth code + PKCE handled by Flask). Opens a popup; resolves with the account.
+export async function msalSignIn() {
+    const res = await fetch("/repo/auth/login");
+    const data = await res.json();
+    if (!res.ok) throw new RepoApiError(res.status, data.error || "Could not start sign-in");
+    const popup = window.open(data.url, "mpj-signin", "width=560,height=720,menubar=no,toolbar=no");
+    if (!popup) throw new RepoApiError(400, "The sign-in popup was blocked. Allow popups for this site and try again.");
+    const started = Date.now();
+    while (Date.now() - started < 5 * 60 * 1000) {
+        await new Promise(r => setTimeout(r, 1500));
+        const status = await (await fetch("/repo/auth/status")).json();
+        if (status.account) { try { popup.close(); } catch (_) { /* cross-origin */ } return status.account; }
+        if (popup.closed) {
+            const again = await (await fetch("/repo/auth/status")).json();
+            if (again.account) return again.account;
+            throw new RepoApiError(401, "Sign-in window closed before finishing.");
+        }
+    }
+    throw new RepoApiError(408, "Sign-in timed out.");
+}
+
+export async function msalStatus() {
+    return (await fetch("/repo/auth/status")).json();
+}
+
+export async function msalSignOut() {
+    await fetch("/repo/auth/logout", { method: "POST" });
 }
 
 // → { provider, name, default_branch, branches }

@@ -19,11 +19,14 @@ def _ado_path(path: str) -> str:
 class AzureDevOpsProvider(BaseProvider):
     name = "Azure DevOps"
 
-    def __init__(self, ref: RepoRef, token: str):
-        super().__init__(ref, token)
+    def __init__(self, ref: RepoRef, token: str, scheme: str = "basic"):
+        super().__init__(ref, token, scheme)
         self.base = (f"https://dev.azure.com/{ref.org}/{ref.project}"
                      f"/_apis/git/repositories/{ref.repo}")
-        self.session.auth = HTTPBasicAuth("", token)
+        if scheme == "bearer":
+            self.session.headers["Authorization"] = f"Bearer {token}"   # Entra / OAuth access token
+        else:
+            self.session.auth = HTTPBasicAuth("", token)                # PAT
         self.session.headers.update({"Accept": "application/json"})
 
     # -- helpers -----------------------------------------------------------

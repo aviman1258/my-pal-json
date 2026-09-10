@@ -11,7 +11,7 @@ import { dataStore, sendRequest, formatContent } from "../send-request.js";
 import { openCollectionPicker } from "../collection-browser.js";
 import { openSettings } from "../settings-panel.js";
 import * as store from "../collections-store.js";
-import { showView } from "../view-switch.js";
+import { showView, viewEvents } from "../view-switch.js";
 import {
     newChain, newStep, normalizeChain, listDrafts, loadDraft, saveDraft, deleteDraft, scheduleSave, flushSave,
     repoChains, importChainFile, pushChain, chainEvents, shortUrl, findSecretHits, scrubChainSecrets
@@ -28,7 +28,9 @@ const state = {
     picking: null,           // { stepId, source: "body"|"header" }
     expanded: new Set(),
     envScope: {},
-    varsGrid: null           // handle from mountKvGrid for the chain variables panel
+    varsGrid: null,          // handle from mountKvGrid for the chain variables panel
+    mode: "list",            // "list" | "editor"
+    suppressList: false
 };
 
 const $ = (id) => document.getElementById(id);
@@ -68,37 +70,113 @@ function defineVariable(name) {
 
 // ---------- chain selection ----------
 
-async function refreshChainSelect() {
-    const sel = $("chainSelect");
-    const drafts = await listDrafts();
-    const tracked = new Set(drafts.map(d => d.repoPath).filter(Boolean));
-    const current = state.chain && state.chain.draftId != null ? `draft:${state.chain.draftId}` : "";
-    sel.innerHTML = "";
-    sel.appendChild(new Option(drafts.length ? "Choose a chain…" : "No chains yet", ""));
-    for (const d of drafts.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))) {
-        sel.appendChild(new Option(`${d.name}${d.dirty ? " •" : ""}${d.repoPath ? "" : "  (local)"}`, `draft:${d.draftId}`));
-    }
-    const remote = repoChains().filter(r => !tracked.has(r.path));
-    if (remote.length) {
-        const grp = document.createElement("optgroup");
-        grp.label = "In repository (not imported)";
-        for (const r of remote) grp.appendChild(new Option(r.name, `repo:${r.path}`));
-        sel.appendChild(grp);
-    }
-    sel.value = current;
-    if (sel.value !== current) sel.value = "";
+// ---------- list <-> editor ----------
+
+function showList() {
+    state.mode = "list";
+    $("chainListView").hidden = false;
+    $("chainEditorView").hidden = true;
+    renderChainList();
 }
 
-async function selectChainValue(value) {
-    if (!value) return;
-    if (state.chain) await flushSave(state.chain).catch(() => {});
-    if (value.startsWith("draft:")) {
-        const d = await loadDraft(Number(value.slice(6)));
-        if (d) setChain(normalizeChain(d));
-    } else if (value.startsWith("repo:")) {
-        const file = store.getFile(value.slice(5));
-        if (file) setChain(await importChainFile(file));
+function showEditor() {
+    state.mode = "editor";
+    $("chainListView").hidden = true;
+    $("chainEditorView").hidden = false;
+}
+
+// Switch to the Chain tab and land on the editor (the tab itself normally opens the list).
+function goToEditor() {
+    state.suppressList = true;
+    showView("chain");
+    state.suppressList = false;
+    showEditor();
+}
+
+function methodsOf(chain) {
+    return (chain.steps || []).slice(0, 8).map(s => (s.request && s.request.method) || "GET");
+}
+
+function whenText(ts) {
+    if (!ts) return "";
+    const d = new Date(ts);
+    const today = new Date();
+    return d.toDateString() === today.toDateString()
+        ? `today ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+        : d.toLocaleDateString();
+}
+
+async function renderChainList() {
+    const list = $("chainList");
+    const drafts = (await listDrafts()).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    const tracked = new Set(drafts.map(d => d.repoPath).filter(Boolean));
+    const remote = repoChains().filter(r => !tracked.has(r.path));
+    const lastId = await getSetting("lastChainDraftId", null);
+    list.innerHTML = "";
+
+    if (!drafts.length && !remote.length) {
+        list.innerHTML = `<div class="chain-empty">No chains yet.<br><br>Click <strong>+ New chain</strong> to start one, or send the request from the Request tab here with <strong>→ Chain</strong>.
+            ${store.getRepo() ? "<br><br>Chains pushed to the repository show up here after a Pull." : ""}</div>`;
+        return;
     }
+
+    const row = (key, name, meta, methods, extra, actions, isRepoOnly) => {
+        const el = document.createElement("div");
+        el.className = "chain-row" + (isRepoOnly ? " repo-only" : "");
+        el.dataset.key = key;
+        el.innerHTML = `
+            <div class="chain-row-main">
+                <div class="chain-row-name">${escapeHtml(name)}${extra}</div>
+                <div class="chain-row-meta">${meta.map(escapeHtml).join("<span>·</span>")}</div>
+            </div>
+            <div class="chain-row-methods">${methods.map(m => `<span class="method method-${escapeHtml(m)}">${escapeHtml(m)}</span>`).join("")}</div>
+            <div class="chain-row-actions">${actions}</div>`;
+        return el;
+    };
+
+    for (const d of drafts) {
+        const n = (d.steps || []).length;
+        const meta = [`${n} step${n === 1 ? "" : "s"}`, d.repoPath ? d.repoPath : "local only", d.updatedAt ? `edited ${whenText(d.updatedAt)}` : ""].filter(Boolean);
+        const extra = (d.dirty ? `<span class="tree-dirty" title="Unpushed changes">•</span>` : "") +
+            (d.draftId === lastId ? ` <span class="cs-badge" title="Last opened">last opened</span>` : "");
+        const el = row(`draft:${d.draftId}`, d.name, meta, methodsOf(d), extra,
+            `<button class="btn-small primary" data-act="open">Open</button><button class="btn-small danger" data-act="delete">Delete</button>`, false);
+        el.addEventListener("click", (e) => {
+            const act = e.target.closest("button") && e.target.closest("button").dataset.act;
+            if (act === "delete") { e.stopPropagation(); deleteDraftFromList(d); return; }
+            openDraft(d.draftId);
+        });
+        list.appendChild(el);
+    }
+    for (const r of remote) {
+        const n = (r.chain.steps || []).length;
+        const el = row(`repo:${r.path}`, r.name, [`${n} step${n === 1 ? "" : "s"}`, r.path, "in repository, not imported yet"], methodsOf(r.chain), "",
+            `<button class="btn-small" data-act="open">Import &amp; open</button>`, true);
+        el.addEventListener("click", () => openRepoChain(r.path));
+        list.appendChild(el);
+    }
+}
+
+async function openDraft(draftId) {
+    if (state.chain) await flushSave(state.chain).catch(() => {});
+    const d = await loadDraft(draftId);
+    if (d) setChain(normalizeChain(d));
+}
+
+async function openRepoChain(path) {
+    if (state.chain) await flushSave(state.chain).catch(() => {});
+    const file = store.getFile(path);
+    if (file) setChain(await importChainFile(file));
+}
+
+async function deleteDraftFromList(d) {
+    const msg = d.repoPath
+        ? `Remove the local draft of "${d.name}"? The file stays in the repository.`
+        : `Delete chain "${d.name}"? It only exists in this browser.`;
+    if (!confirm(msg)) return;
+    await deleteDraft(d.draftId);
+    if (state.chain && state.chain.draftId === d.draftId) { state.chain = null; render(); }
+    renderChainList();
 }
 
 function setChain(chain) {
@@ -108,7 +186,7 @@ function setChain(chain) {
     state.picking = null;
     if (chain && chain.draftId != null) setSetting("lastChainDraftId", chain.draftId);
     render();
-    refreshChainSelect();
+    showEditor();
 }
 
 async function createChain() {
@@ -129,7 +207,7 @@ async function deleteCurrentChain() {
     if (c.draftId != null) await deleteDraft(c.draftId);
     state.chain = null;
     render();
-    refreshChainSelect();
+    showList();
 }
 
 async function pushCurrentChain() {
@@ -160,7 +238,6 @@ async function pushCurrentChain() {
         await pushChain(c, message);
         toast(moved.length ? `Pushed ${c.repoPath}. Moved to environment: ${describeMoves(moved).join(", ")}` : `Pushed ${c.repoPath}.`, "info", moved.length ? 9000 : 3500);
         render();
-        refreshChainSelect();
     } catch (err) {
         toast(err.message, "error", 8000);
     }
@@ -659,12 +736,11 @@ async function run({ fromIndex = 0, onlyIndex = null } = {}) {
 // ---------- wiring ----------
 
 document.addEventListener("DOMContentLoaded", async () => {
-    $("chainSelect").addEventListener("change", (e) => selectChainValue(e.target.value));
     $("chainNewBtn").addEventListener("click", createChain);
+    $("chainBackBtn").addEventListener("click", async () => { if (state.chain) await flushSave(state.chain).catch(() => {}); showList(); });
     $("chainDeleteBtn").addEventListener("click", deleteCurrentChain);
     $("chainPushBtn").addEventListener("click", pushCurrentChain);
     $("chainName").addEventListener("input", (e) => { if (state.chain) { state.chain.name = e.target.value; touch(); } });
-    $("chainName").addEventListener("blur", () => refreshChainSelect());
     $("chainRunBtn").addEventListener("click", () => run());
     $("chainStopBtn").addEventListener("click", () => { if (state.abort) state.abort.abort(); });
     $("chainAddStepBtn").addEventListener("click", showAddStepMenu);
@@ -678,7 +754,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             setChain(chain);
         }
         addStepFromMainTab();
-        showView("chain");
+        goToEditor();
     });
 
     makeSortable(stepsEl(), {
@@ -695,18 +771,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") cancelPick(); });
     document.addEventListener("mpj:open-chain", async (e) => {
         setChain(await importChainFile(e.detail));
-        showView("chain");
+        goToEditor();
     });
-    chainEvents.addEventListener("drafts", refreshChainSelect);
-    store.storeEvents.addEventListener("changed", refreshChainSelect);
+    // The Chain tab always opens on the list; goToEditor() bypasses that deliberately.
+    viewEvents.addEventListener("change", (e) => { if (e.detail === "chain" && !state.suppressList) showList(); });
+    const refreshListIfVisible = () => { if (state.mode === "list") renderChainList(); };
+    chainEvents.addEventListener("drafts", refreshListIfVisible);
+    store.storeEvents.addEventListener("changed", refreshListIfVisible);
     envEvents.addEventListener("change", updateEnvLabel);
 
     await updateEnvLabel();
+    // Keep the last chain loaded in memory so "→ Chain" can append to it, but start on the list.
     const lastId = await getSetting("lastChainDraftId", null);
     if (lastId != null) {
         const d = await loadDraft(lastId);
         if (d) { state.chain = normalizeChain(d); }
     }
     render();
-    refreshChainSelect();
+    showList();
 });

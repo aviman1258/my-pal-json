@@ -8,8 +8,12 @@ services:
       - "127.0.0.1:5000:5000"   # only reachable from this machine
     environment:
       HOST_ALIAS: host.containers.internal,host.docker.internal   # first that connects wins
-      WORKERS: "2"
-    # If your network re-signs TLS (corporate proxy), drop the root CA (.crt or .pem) in ./certs:
-    # volumes:
-    #   - ./certs:/certs:ro
+      WORKERS: "1"
+    volumes:
+      - mpj-data:/data           # keeps the Microsoft sign-in across restarts
+      # If your network re-signs TLS (corporate proxy), drop the root CA (.crt or .pem) in ./certs:
+      # - ./certs:/certs:ro
     restart: unless-stopped
+
+volumes:
+  mpj-data:

@@ -37,9 +37,9 @@ def map_http_error(resp: requests.Response, provider_name: str) -> RepoError:
     """Translate an upstream HTTP error into a RepoError with a human message."""
     code = resp.status_code
     if code == 401:
-        return RepoError(401, "Token rejected")
+        return RepoError(401, "Token rejected or expired")
     if code == 403:
-        return RepoError(403, "Token lacks Code (Read & Write) scope")
+        return RepoError(403, "Not allowed: the token lacks Code (Read & Write) scope, or your account lacks access to this repo")
     if code == 404:
         return RepoError(404, "Repo, branch or path not found")
     if code in (409, 412):
@@ -53,9 +53,10 @@ class BaseProvider:
 
     name = "base"
 
-    def __init__(self, ref: RepoRef, token: str):
+    def __init__(self, ref: RepoRef, token: str, scheme: str = "basic"):
         self.ref = ref
         self.token = token
+        self.scheme = scheme          # "basic" (PAT) or "bearer" (OAuth / Entra access token)
         self.session = requests.Session()
 
     def ping(self) -> Dict[str, str]:

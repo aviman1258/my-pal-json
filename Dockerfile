@@ -24,7 +24,12 @@ RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 ENV HOST_ALIAS=host.containers.internal,host.docker.internal \
     FLASK_DEBUG=0 \
     PYTHONUNBUFFERED=1 \
-    WORKERS=2
+    WORKERS=1 \
+    MPJ_DATA_DIR=/data
+
+# Microsoft sign-in cache lives here; mount a volume (-v mpj-data:/data) to keep it across restarts.
+RUN mkdir -p /data
+VOLUME ["/data"]
 
 EXPOSE 5000
 

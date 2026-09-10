@@ -54,6 +54,7 @@
             </label>
             <button id="saveRequestBtn" class="btn-small" title="Save into the loaded collection request (Ctrl+S)">Save</button>
             <button id="saveAsBtn" class="btn-small" title="Save as a new request in a collection">Save as…</button>
+            <button id="sendToChainBtn" class="btn-small" title="Add this request as a step in the open chain">→ Chain</button>
             <button id="sendBtn" class="send-button">Send</button>
         </div>
 
@@ -84,7 +85,6 @@
                 <button id="prettyBtn">Pretty</button>
                 <button id="analyzeBtn">Analyze</button>
                 <button id="modelBtn">Model</button>
-                <button id="sendToChainBtn" class="secondary" title="Add this request as a step in the open chain">→ Chain</button>
                 <select id="languageSelect" class="language-select">
                     <option value="csharp">C#</option>
                     <option value="python">Python</option>
@@ -107,11 +107,23 @@
 
     <!-- Chain view -->
     <section id="chainView" hidden>
+      <!-- Chain list: pick an existing chain or start a new one -->
+      <div id="chainListView">
+        <div class="chain-toolbar chain-list-header">
+            <h2>Chains</h2>
+            <span class="msg-muted">A chain runs requests top to bottom and passes values between them.</span>
+            <span class="spacer"></span>
+            <button id="chainNewBtn" class="btn-small primary">+ New chain</button>
+        </div>
+        <div id="chainList" class="chain-list"></div>
+      </div>
+
+      <!-- Chain editor -->
+      <div id="chainEditorView" hidden>
         <div class="chain-toolbar">
-            <select id="chainSelect" title="Chains: local drafts and files in the repository"></select>
+            <button id="chainBackBtn" class="btn-small" title="Back to the list of chains">← All chains</button>
             <input type="text" id="chainName" placeholder="Chain name" disabled>
             <span id="chainRepoPath" class="msg-muted"></span>
-            <button id="chainNewBtn" class="btn-small">New</button>
             <button id="chainPushBtn" class="btn-small primary" disabled title="Commit this chain as a *.mypaljson_chain.json file">Push to repo</button>
             <button id="chainDeleteBtn" class="btn-small danger" disabled>Delete</button>
         </div>
@@ -129,6 +141,7 @@
         </details>
         <ol id="chainSteps" class="chain-steps"></ol>
         <button id="chainAddStepBtn" class="chain-add-step" hidden>+ Add step</button>
+      </div>
     </section>
 
     <!-- Collections drawer -->
@@ -169,6 +182,15 @@
                 </div>
                 <div class="field-row">
                     <div class="field">
+                        <label for="repoAuthSelect">Sign in with</label>
+                        <select id="repoAuthSelect">
+                            <option value="msal">Microsoft sign-in (browser)</option>
+                            <option value="azcli">Azure CLI (az login)</option>
+                            <option value="gcm">Git Credential Manager</option>
+                            <option value="pat">Personal Access Token</option>
+                        </select>
+                    </div>
+                    <div class="field" id="repoTokenField">
                         <label for="repoTokenInput">Personal Access Token (stays in this browser)</label>
                         <input id="repoTokenInput" type="password" placeholder="ADO: Code (Read &amp; Write) · GitHub: Contents read/write" autocomplete="off">
                     </div>
@@ -176,6 +198,11 @@
                         <label for="repoBranchInput">Branch</label>
                         <select id="repoBranchInput"></select>
                     </div>
+                </div>
+                <div id="repoAuthHint" class="msg-muted"></div>
+                <div id="msalRow" class="modal-buttons" style="justify-content: flex-start; margin-top: 6px;" hidden>
+                    <button id="msalSignInBtn" class="btn-small primary">Sign in with Microsoft</button>
+                    <button id="msalSignOutBtn" class="btn-small" hidden>Sign out</button>
                 </div>
                 <div id="repoTestMsg" class="msg-muted"></div>
                 <div class="modal-buttons">

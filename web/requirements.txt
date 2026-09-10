@@ -13,3 +13,4 @@ requests==2.31.0
 six==1.16.0
 Werkzeug==3.0.4
 truststore==0.10.4
+msal==1.38.0

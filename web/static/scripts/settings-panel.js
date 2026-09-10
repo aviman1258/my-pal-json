@@ -31,6 +31,44 @@ export function openSettings(pane = "repos") {
 
 let editingRepoUrl = null;
 let testedBranches = null;
+let authInfo = null;   // from /repo/auth-sources
+
+const AUTH_LABEL = { pat: "PAT", msal: "Microsoft sign-in", azcli: "Azure CLI", gcm: "Git Credential Manager" };
+
+async function loadAuthInfo(force = false) {
+    if (!authInfo || force) authInfo = await repoApi.authSources();
+    return authInfo;
+}
+
+// Show/hide the token box and explain what each sign-in method needs on this machine.
+async function renderAuthHint() {
+    const mode = document.getElementById("repoAuthSelect").value;
+    document.getElementById("repoTokenField").hidden = mode !== "pat";
+    document.getElementById("msalRow").hidden = mode !== "msal";
+    const hint = document.getElementById("repoAuthHint");
+    const info = await loadAuthInfo();
+    const isAdo = (repoApi.describeRepoUrl(document.getElementById("repoUrlInput").value) || {}).provider === "ado";
+    if (mode === "msal") {
+        const signedIn = info.msal && info.msal.account;
+        document.getElementById("msalSignInBtn").textContent = signedIn ? "Sign in as someone else" : "Sign in with Microsoft";
+        document.getElementById("msalSignOutBtn").hidden = !signedIn;
+        if (!info.msal || !info.msal.available) { hint.textContent = "The server is missing the msal package (pip install msal)."; hint.className = "msg-error"; }
+        else if (signedIn) { hint.textContent = `Signed in as ${info.msal.account}. Short-lived Azure DevOps tokens are fetched as needed; the sign-in is kept on the app's side, nothing in this browser.${isAdo ? "" : " Azure DevOps repositories only."}`; hint.className = isAdo ? "msg-ok" : "msg-error"; }
+        else { hint.textContent = "Sign in with your work account in a popup. No PAT, works from source and from the container. Azure DevOps repositories only."; hint.className = "msg-muted"; }
+    } else if (mode === "pat") {
+        hint.textContent = "The token is stored only in this browser and sent to the local app with each repo call. Scopes: Azure DevOps Code (Read & Write); GitHub fine-grained Contents read/write.";
+        hint.className = "msg-muted";
+    } else if (mode === "azcli") {
+        if (info.in_container) { hint.textContent = "Not available inside the container. Run the app from source (python -m web.app) to use your Azure CLI sign-in."; hint.className = "msg-error"; }
+        else if (!info.azcli.available) { hint.textContent = "Azure CLI (az) was not found on this machine. Install it from https://aka.ms/azcli, run `az login`, then restart the app."; hint.className = "msg-error"; }
+        else if (!info.azcli.account) { hint.textContent = "Azure CLI is installed but not signed in. Run `az login` in a terminal, then Test again."; hint.className = "msg-error"; }
+        else { hint.textContent = `Uses your Azure CLI session (signed in as ${info.azcli.account}) to get short-lived Azure DevOps tokens. No PAT needed; nothing is stored.${isAdo ? "" : " Azure DevOps repositories only."}`; hint.className = isAdo ? "msg-ok" : "msg-error"; }
+    } else if (mode === "gcm") {
+        if (info.in_container) { hint.textContent = "Not available inside the container. Run the app from source to reuse your git sign-in."; hint.className = "msg-error"; }
+        else if (!info.gcm.available) { hint.textContent = "git was not found on this machine."; hint.className = "msg-error"; }
+        else { hint.textContent = "Reuses the sign-in Git Credential Manager already holds for this host (the one `git push` uses). If it has none yet, run `git fetch` on a clone of the repo once."; hint.className = "msg-muted"; }
+    }
+}
 
 async function renderRepos() {
     const list = document.getElementById("repoList");
@@ -44,9 +82,10 @@ async function renderRepos() {
     for (const r of repos) {
         const row = document.createElement("div");
         row.className = "list-row" + (active && active.url === r.url ? " selected" : "");
+        const authText = (r.auth || "pat") === "pat" ? (r.token ? "PAT saved" : "no token") : `sign-in: ${AUTH_LABEL[r.auth] || r.auth}`;
         row.innerHTML = `
             <div class="grow"><strong>${escapeHtml(r.label || r.url)}</strong>
-                <span class="sub">${escapeHtml(r.url)} · ${escapeHtml(r.branch || "default branch")} · ${r.token ? "token saved" : "no token"}</span></div>
+                <span class="sub">${escapeHtml(r.url)} · ${escapeHtml(r.branch || "default branch")} · ${escapeHtml(authText)}</span></div>
             <button class="btn-small" data-act="use">Use</button>
             <button class="btn-small" data-act="edit">Edit</button>
             <button class="btn-small danger" data-act="del">Delete</button>`;
@@ -68,7 +107,9 @@ async function renderRepos() {
 function fillRepoForm(r) {
     editingRepoUrl = r ? r.url : null;
     document.getElementById("repoUrlInput").value = r ? r.url : "";
+    document.getElementById("repoAuthSelect").value = r ? (r.auth || "pat") : "pat";
     document.getElementById("repoTokenInput").value = r ? (r.token || "") : "";
+    renderAuthHint();
     const sel = document.getElementById("repoBranchInput");
     sel.innerHTML = "";
     if (r && r.branch) sel.appendChild(new Option(r.branch, r.branch, true, true));
@@ -79,21 +120,24 @@ function fillRepoForm(r) {
 
 async function testRepo() {
     const url = document.getElementById("repoUrlInput").value.trim();
+    const auth = document.getElementById("repoAuthSelect").value;
     const token = document.getElementById("repoTokenInput").value.trim();
     const msg = document.getElementById("repoTestMsg");
     const desc = repoApi.describeRepoUrl(url);
     if (!desc) { msg.textContent = "That doesn't look like an Azure DevOps or GitHub repo URL."; msg.className = "msg-error"; return null; }
-    if (!token) { msg.textContent = "Paste a Personal Access Token first."; msg.className = "msg-error"; return null; }
+    if (auth === "pat" && !token) { msg.textContent = "Paste a Personal Access Token first, or pick another sign-in method."; msg.className = "msg-error"; return null; }
+    if ((auth === "azcli" || auth === "msal") && desc.provider !== "ado") { msg.textContent = `${AUTH_LABEL[auth]} only works for Azure DevOps repositories.`; msg.className = "msg-error"; return null; }
+    if (auth === "msal" && !((await loadAuthInfo(true)).msal || {}).account) { msg.textContent = "Click “Sign in with Microsoft” first."; msg.className = "msg-error"; return null; }
     msg.textContent = "Testing…"; msg.className = "msg-muted";
     try {
-        const info = await repoApi.ping({ url, token });
+        const info = await repoApi.ping({ url, token, auth });
         const sel = document.getElementById("repoBranchInput");
         const current = sel.value;
         sel.innerHTML = "";
         for (const b of info.branches || []) sel.appendChild(new Option(b, b));
         sel.value = (info.branches || []).includes(current) ? current : info.default_branch;
         testedBranches = info.branches;
-        msg.textContent = `OK: ${info.name} (${desc.provider === "ado" ? "Azure DevOps" : "GitHub"}), default branch ${info.default_branch}.`;
+        msg.textContent = `OK via ${AUTH_LABEL[auth]}: ${info.name} (${desc.provider === "ado" ? "Azure DevOps" : "GitHub"}), default branch ${info.default_branch}.`;
         msg.className = "msg-ok";
         return { ...desc, info };
     } catch (err) {
@@ -105,12 +149,14 @@ async function testRepo() {
 
 async function saveRepoForm() {
     const url = document.getElementById("repoUrlInput").value.trim();
-    const token = document.getElementById("repoTokenInput").value.trim();
+    const auth = document.getElementById("repoAuthSelect").value;
+    const token = auth === "pat" ? document.getElementById("repoTokenInput").value.trim() : "";
     const branch = document.getElementById("repoBranchInput").value || "";
     const desc = repoApi.describeRepoUrl(url);
     if (!desc) { toast("Unrecognized repo URL.", "error"); return; }
+    if ((auth === "azcli" || auth === "msal") && desc.provider !== "ado") { toast(`${AUTH_LABEL[auth]} only works for Azure DevOps repositories.`, "error"); return; }
     if (editingRepoUrl && editingRepoUrl !== url) await store.deleteRepo(editingRepoUrl);
-    const repo = { url, token, branch, provider: desc.provider, label: desc.label, lastPulled: null };
+    const repo = { url, token, auth, branch, provider: desc.provider, label: desc.label, lastPulled: null };
     await store.saveRepo(repo);
     if (!store.getRepo() || store.getRepo().url === url) await store.setActiveRepo(repo);
     fillRepoForm(null);
@@ -252,6 +298,37 @@ document.addEventListener("DOMContentLoaded", async () => {
         const msg = document.getElementById("repoTestMsg");
         msg.textContent = d ? `${d.provider === "ado" ? "Azure DevOps" : "GitHub"}: ${d.label}` : "";
         msg.className = "msg-muted";
+        renderAuthHint();
+    });
+    document.getElementById("repoAuthSelect").addEventListener("change", renderAuthHint);
+    document.getElementById("msalSignInBtn").addEventListener("click", async () => {
+        const btn = document.getElementById("msalSignInBtn");
+        btn.disabled = true; btn.textContent = "Waiting for the sign-in window…";
+        try {
+            const account = await repoApi.msalSignIn();
+            await loadAuthInfo(true);
+            toast(`Signed in as ${account}.`);
+        } catch (err) {
+            toast(err.message, "error", 7000);
+        } finally {
+            btn.disabled = false;
+            renderAuthHint();
+        }
+    });
+    document.getElementById("msalSignOutBtn").addEventListener("click", async () => {
+        await repoApi.msalSignOut();
+        await loadAuthInfo(true);
+        renderAuthHint();
+        toast("Signed out.");
+    });
+    // Default the dropdown to whatever already works here: Microsoft sign-in stays the default,
+    // but if the Azure CLI is signed in and no repos exist yet, offer that instead.
+    loadAuthInfo().then(async (info) => {
+        if (!(await store.listRepos()).length) {
+            if (info.msal && info.msal.account) document.getElementById("repoAuthSelect").value = "msal";
+            else if (info.azcli && info.azcli.account) document.getElementById("repoAuthSelect").value = "azcli";
+            renderAuthHint();
+        }
     });
 
     document.getElementById("envNewBtn").addEventListener("click", () => fillEnvForm(null));
